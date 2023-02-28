@@ -1,6 +1,11 @@
 import { createWebHistory, createRouter } from 'vue-router'
 import store from '@/store'
 
+
+/* Layouts */
+const Layout = () => import('@/components/layouts/Default.vue')
+/* Layouts */
+
 /* Guest Component */
 const Login = () => import('@/components/Login.vue')
 const Register = () => import('@/components/Register.vue')
@@ -8,10 +13,6 @@ const HomePage = () => import('@/components/HomePage.vue')
 const MerchantInquiry = () => import('@/components/MerchantInquiry.vue')
 const AgencyInquiry = () => import('@/components/AgencyInquiry.vue')
 /* Guest Component */
-
-/* Layouts */
-const Layout = () => import('@/components/layouts/Default.vue')
-/* Layouts */
 
 /* Authenticated Component */
 const Dashboard = () => import('@/components/Dashboard.vue')
