@@ -1,24 +1,8 @@
 <template>
     <div>
         <section class="hero-image">
-            <v-img
-                :src="`https://the-syringe.com/images/${website_infos.main_image}`"
-                lazy-src="`https://the-syringe.com/images/${website_infos.main_image}`"
-                height="500"
-                class="bg-grey-lighten-2 w-100">
-                <template v-slot:placeholder>
-                  <v-row
-                    class="fill-height ma-0"
-                    align="center"
-                    justify="center"
-                  >
-                    <v-progress-circular
-                      indeterminate
-                      color="grey-lighten-5"
-                    ></v-progress-circular>
-                  </v-row>
-                </template>
-            </v-img>
+            
+            <img :src="`https://the-syringe.com/images/${website_infos.main_image}`" class="w-100">
 
             <div class="hero-text">
               <h1 class="display-5 fw-bold text-danger">
@@ -37,26 +21,10 @@
                         <v-col v-for="(skill, i) in skills" :key="i" cols="12" sm="12" :md="skill.sgm_id == 1 ? '12' : '4'">
 
                             <a href="#" class="img-box hover-effect">
-                                <v-img
-                                    :src="`https://the-syringe.com/images/${skill.image}?image=${i * 5 + 10}`"
-                                    :lazy-src="`https://the-syringe.com/images/${skill.image}?image=${i * 5 + 10}`"
-                                    aspect-ratio="1"
-                                    cover
-                                    class="bg-grey-lighten-2"
-                                >
-                                <template v-slot:placeholder>
-                                      <v-row
-                                        class="fill-height ma-0"
-                                        align="center"
-                                        justify="center"
-                                      >
-                                        <v-progress-circular
-                                          indeterminate
-                                          color="grey-lighten-5"
-                                        ></v-progress-circular>
-                                      </v-row>
-                                    </template>
-                                </v-img>
+                                
+
+                                <v-lazy-image :src="`https://the-syringe.com/images/${skill.image}`" />
+
                                 <div class="overlay"></div>
                                 <div class="listing-badges">
                                   <span class="featured">{{ skill.job_number }} Jobs</span>
@@ -91,26 +59,7 @@
                           <!-- Image Box -->
                           <a href="#" class="img-box hover-effect">
 
-                            <v-img
-                                :src="`https://the-syringe.com/images/${employer_setting[0].image}`"
-                                :lazy-src="`https://the-syringe.com/images/${employer_setting[0].image}`"
-                                aspect-ratio="1"
-                                cover
-                                class="bg-grey-lighten-2"
-                            >
-                            <template v-slot:placeholder>
-                                  <v-row
-                                    class="fill-height ma-0"
-                                    align="center"
-                                    justify="center"
-                                  >
-                                    <v-progress-circular
-                                      indeterminate
-                                      color="grey-lighten-5"
-                                    ></v-progress-circular>
-                                  </v-row>
-                                </template>
-                            </v-img>
+                            <v-lazy-image :src="`https://the-syringe.com/images/${employer_setting[0].image}`"/>
 
                             <div class="overlay"></div>
                             <div class="listing-badges">
@@ -128,26 +77,9 @@
                                 
                                   <a href="#" class="img-box hover-effect">
 
-                                    <v-img
-                                        :src="`https://the-syringe.com/images/${setting.image}`"
-                                        :lazy-src="`https://the-syringe.com/images/${setting.image}`"
-                                        aspect-ratio="1"
-                                        cover
-                                        class="bg-grey-lighten-2"
-                                    >
-                                    <template v-slot:placeholder>
-                                          <v-row
-                                            class="fill-height ma-0"
-                                            align="center"
-                                            justify="center"
-                                          >
-                                            <v-progress-circular
-                                              indeterminate
-                                              color="grey-lighten-5"
-                                            ></v-progress-circular>
-                                          </v-row>
-                                        </template>
-                                    </v-img>
+                                   
+
+                                    <v-lazy-image  :src="`https://the-syringe.com/images/${setting.image}`"/>
 
                                     <div class="overlay"></div>
                                     <div class="listing-badges">
@@ -166,26 +98,7 @@
 
                         <v-col class="px-2" cols="12" sm="12" md="6" lg="4">
                           <a href="#" class="img-box hover-effect">
-                            <v-img
-                                :src="`https://the-syringe.com/images/${employer_setting[5].image}`"
-                                :lazy-src="`https://the-syringe.com/images/${employer_setting[5].image}`"
-                                aspect-ratio="1"
-                                cover
-                                class="bg-grey-lighten-2"
-                            >
-                            <template v-slot:placeholder>
-                                  <v-row
-                                    class="fill-height ma-0"
-                                    align="center"
-                                    justify="center"
-                                  >
-                                    <v-progress-circular
-                                      indeterminate
-                                      color="grey-lighten-5"
-                                    ></v-progress-circular>
-                                  </v-row>
-                                </template>
-                            </v-img>
+                            <v-lazy-image  :src="`https://the-syringe.com/images/${employer_setting[5].image}`"/>
                             <div class="overlay"></div>
                             <div class="listing-badges">
                               <span class="featured">{{ employer_setting[5].job_number }} Jobs</span>
@@ -218,26 +131,8 @@
                   <!-- Image Box -->
                   <router-link :to="{name:'register'}" class="img-box hover-effect">
 
-                    <v-img
-                        src="https://the-syringe.com/images/jobseeker.jpg"
-                        lazy-src="https://the-syringe.com/images/jobseeker.jpg"
-                        height="100%"
-                        cover
-                        class="bg-grey-lighten-2"
-                    >
-                    <template v-slot:placeholder>
-                          <v-row
-                            class="fill-height ma-0"
-                            align="center"
-                            justify="center"
-                          >
-                            <v-progress-circular
-                              indeterminate
-                              color="grey-lighten-5"
-                            ></v-progress-circular>
-                          </v-row>
-                        </template>
-                    </v-img>
+                    <v-lazy-image src="https://the-syringe.com/images/jobseeker.jpg" />
+
                     <div class="overlay"></div>
                     <div class="img-box-content visible">
                       <h4 class="mb-3">Job Seekers</h4>
@@ -248,26 +143,7 @@
                 <div class="col-lg-3 col-md-6 col-sm-6 px-2">
                   <!-- Image Box -->
                   <router-link :to="{name:'merchant-inquiry'}" class="img-box hover-effect">
-                    <v-img
-                        src="https://the-syringe.com/images/employer.jpg"
-                        lazy-src="https://the-syringe.com/images/employer.jpg"
-
-                        cover
-                        class="bg-grey-lighten-2"
-                    >
-                    <template v-slot:placeholder>
-                          <v-row
-                            class="fill-height ma-0"
-                            align="center"
-                            justify="center"
-                          >
-                            <v-progress-circular
-                              indeterminate
-                              color="grey-lighten-5"
-                            ></v-progress-circular>
-                          </v-row>
-                        </template>
-                    </v-img>
+                    <v-lazy-image src="https://the-syringe.com/images/employer.jpg" />
                     <div class="overlay"></div>
                     <div class="img-box-content visible">
                       <h4 class="mb-3">Employers</h4>
@@ -278,26 +154,9 @@
                 <div class="col-lg-3 col-md-6 col-sm-6 px-2">
                   <!-- Image Box -->
                    <router-link :to="{name:'agency-inquiry'}" class="img-box hover-effect">
-                     <v-img
-                        src="https://the-syringe.com/images/agency.jpg"
-                        lazy-src="https://the-syringe.com/images/agency.jpg"
 
-                        cover
-                        class="bg-grey-lighten-2"
-                    >
-                    <template v-slot:placeholder>
-                          <v-row
-                            class="fill-height ma-0"
-                            align="center"
-                            justify="center"
-                          >
-                            <v-progress-circular
-                              indeterminate
-                              color="grey-lighten-5"
-                            ></v-progress-circular>
-                          </v-row>
-                        </template>
-                    </v-img>
+                    <v-lazy-image src="https://the-syringe.com/images/agency.jpg" />
+                     
                     <div class="overlay"></div>
                     <div class="img-box-content visible">
                       <h4 class="mb-3">Agencies</h4>
@@ -311,9 +170,10 @@
     </div>
 </template>
 
-
 <script setup>
     import { ref } from 'vue'
+    import VLazyImage from "v-lazy-image"
+
     const skills = ref([]);
     const major_cities = ref([]);
     const employer_setting = ref([]);
