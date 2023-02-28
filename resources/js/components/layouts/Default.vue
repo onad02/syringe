@@ -71,7 +71,14 @@
         </nav>
        
         <main role="main">
-            <router-view></router-view>
+            <Suspense>
+                <template #default>
+                    <router-view></router-view>
+                </template>
+                <template #fallback>
+                    <div>Loading... (3 seconds)</div>
+                </template>
+            </Suspense>
         </main>
 
         <footer class="first-footer">
@@ -213,7 +220,7 @@ export default {
                 this.$router.push({name:"login"})
             })
         },
-        siteData() {
+        async siteData() {
             axios.get('/api/site-data').then((response) => {
                 this.skills = response.data.skills;
                 this.website_infos = response.data.website_infos;

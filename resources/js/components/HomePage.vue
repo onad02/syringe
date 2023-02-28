@@ -311,40 +311,20 @@
     </div>
 </template>
 
-<script>
 
-import VLazyImage from "v-lazy-image";
+<script setup>
+    import { ref } from 'vue'
+    const skills = ref([]);
+    const major_cities = ref([]);
+    const employer_setting = ref([]);
+    const website_infos = ref([]);
 
-export default {
-    name:"homepage",
-    components: {
-        "v-lazy-image": VLazyImage,
-      },
-    data(){
-        return {
-            skills: {},
-            major_cities: {},
-            employer_setting: {},
-            website_infos: {}
-        }
-    },
-    computed: {
-        filterEmployerSetting () {
-            return this.employer_setting.slice(1, 5)
-        }
-    },
-    created() {
-        this.homeData();
-    },
-    methods: {
-        homeData() {
-            axios.get('/api/home-data').then((response) => {
-                this.skills = response.data.skills;
-                this.major_cities = response.data.major_cities;
-                this.employer_setting = response.data.employer_setting;
-                this.website_infos = response.data.website_infos;
-            });
-        }
-    }
-}
+    const { data } = await axios.get('/api/home-data');
+    skills.value = data.skills;
+    major_cities.value = data.major_cities;
+    employer_setting.value = data.employer_setting;
+    website_infos.value = data.website_infos;
+
+    const filterEmployerSetting = employer_setting.value.slice(1, 5);
+
 </script>
