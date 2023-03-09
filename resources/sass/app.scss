@@ -19,17 +19,20 @@ body {
 }
 
 .bg-signup {
+	height: 100%!important;
     background: url('/images/signup.jpeg') no-repeat center center fixed; 
   	-webkit-background-size: cover;
   	-moz-background-size: cover;
   	-o-background-size: cover;
-  	background-size: cover; padding-top: 150px; padding-bottom: 50px;
+  	background-size: cover; 
+  	padding: 150px 0px;
 }
 
 @media (max-width: 767px) {
 
     .bg-signup {
         background-image: none;
+        background: #f5f6ff!important;
     }
 }
 
@@ -43,6 +46,14 @@ body {
 
 .v-selection-control--density-default {
     --v-selection-control-size: inherit !important;
+}
+
+.v-label {
+	font-size: 14px !important;
+}
+
+.v-selection-control--inline .v-label {
+    padding: 0px 5px !important;
 }
 
 .skills .v-label {

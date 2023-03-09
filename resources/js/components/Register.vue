@@ -11,6 +11,7 @@
                             <p>Please enter your email and press Continue</p>
                             <v-form ref="form" class="mx-2" lazy-validation>
                               <v-text-field
+                                density="comfortable"
                                 v-model="email"
                                 label="Email Address"
                                 :rules="emailRules"
@@ -77,6 +78,7 @@
                                     
 
                                 <v-text-field
+                                    density="comfortable"
                                     v-model="email"
                                     label="Email Address"
                                     type="email"
@@ -86,6 +88,7 @@
                                  <v-row justify="space-between" >
                                         <v-col cols="12" sm="12" md="8">
                                             <v-text-field
+                                                density="comfortable"
                                               v-model="otp"
                                               label="OTP"
                                               type="input"
@@ -143,23 +146,26 @@
                                         <b>Name</b>
                                     </v-col>
                                     <v-col cols="8" align="end">
-                                        <v-radio-group class="pa-5" hide-details="auto" v-model="gender" inline :rules="[v => !!v || 'Gender is required']">
+                                        <v-radio-group class="p-2"  hide-details="auto" v-model="gender" inline :rules="[v => !!v || 'Gender is required']">
                                         <v-spacer></v-spacer>
                                           <v-radio hide-details="auto"
                                             label="Male"
                                             value="M"
                                             color="pink"
+                                            class="px-2"
                                           ></v-radio>
                                           <v-radio hide-details="auto"
                                             label="Female"
                                             value="F"
                                             color="pink"
+                                            class="px-2"
                                           ></v-radio>
                                         </v-radio-group>
                                     </v-col>
                                 </v-row>
 
                                 <v-text-field
+                                    density="comfortable"
                                     v-model="name"
                                     variant="solo"
                                     :rules="nameRules"
@@ -174,7 +180,7 @@
                                     :preferred-countries="['SG', 'BD', 'IN', 'MY', 'GB', 'PH']"
                                     @update="phoneEvent = $event"
                                     :success="phoneEvent?.isValid"
-                                    size="lg"
+                                    size="md"
                                 />
                                 <br>
                                 <v-row align="center" justify="space-between" no-gutters>
@@ -192,7 +198,7 @@
                                     :default-country-code="'SG'"
                                     :preferred-countries="['SG', 'BD', 'IN', 'MY', 'GB', 'PH']"
                                     :disabled="same_phone"
-                                    size="lg"
+                                    size="md"
                                 />
                                  <br>
                                  <v-btn
@@ -217,9 +223,9 @@
                           <v-col cols="12" sm="12" md="6" class="justify-center align-center pa-5">
                             <h3 class="mb-5">Step 3 - Additional Security</h3>
                             <v-form ref="form_additional_security" class="mx-2" lazy-validation>
-                                 <v-text-field v-model="password" type="password"  label="Password" variant="solo" :rules="passwordRules"> </v-text-field>   
+                                 <v-text-field density="comfortable" v-model="password" type="password"  label="Password" variant="solo" :rules="passwordRules"> </v-text-field>   
                                  <br>
-                                 <v-text-field v-model="confirm_password" type="password"  label="Confirm Password" variant="solo" :rules="passwordConfirmRules"> </v-text-field>   
+                                 <v-text-field density="comfortable" v-model="confirm_password" type="password"  label="Confirm Password" variant="solo" :rules="passwordConfirmRules"> </v-text-field>   
                                  <v-btn
                                   :loading="processing"
                                   :disabled="processing"
@@ -320,6 +326,7 @@
                                 ></v-combobox>
                                 <br>
                                 <v-text-field
+                                    density="comfortable"
                                     label="DD/MM/YYYY"
                                     v-model="birth_date"
                                     v-mask="'##/##/####'"
@@ -496,24 +503,8 @@ export default {
             signIn:'auth/login'
         }),
         async processRegister(){
-            const user = {
-                email: this.email,
-                name: this.name,
-                password: this.password,
-                password_confirmation: this.confirm_password,
-                gender: this.gender,
-                mobile_number: this.mobile_number,
-                whats_app: this.whats_app,
-                country: this.country,
-                city: this.city,
-                town: this.town,
-                nationality: this.nationality.country_id ,
-                passport: this.passport_country.country_id,
-                birth_date: this.birth_date,
-                skill: this.skill,
-            }
             await axios.get('/sanctum/csrf-cookie')
-            await axios.post('/register',user).then(response=>{
+            await axios.post('/register',{ action: 'skills', email: this.email, skill : this.skill }).then(response=>{
                 this.signIn();
                 this.step = 8;
             }).catch(({response})=>{
@@ -553,7 +544,7 @@ export default {
                 this.processing = false;
                 this.otp_resend = true;
                 setTimeout(() => this.resend_disable = false, 60000);
-                //setTimeout(() => this.otp_resend = false, 5000);
+                setTimeout(() => this.otp_resend = false, 3000);
             }).catch(({error})=>{
                 this.processing = false;
                 setTimeout(() => this.resend_disable = false, 60000);
@@ -569,32 +560,56 @@ export default {
                 }).catch(({error})=>{
                     this.processing_otp = false;
                     this.otp_error = true;
-                    //setTimeout(() => this.otp_error = false, 5000);
+                    setTimeout(() => this.otp_error = false, 3000);
                 });
             }
         },
         async personalDetails(){
             const { valid } = await this.$refs.form_personal_details.validate();
             if(valid){
-                this.step = 4;
+                this.processing = true;
+                axios.post('/api/register',{ action: 'personal-details', email: this.email, name: this.name, gender: this.gender, mobile_number: this.mobile_number, whats_app: this.whats_app }).then(response=>{
+                    this.processing = false;
+                    this.step = 4;
+                }).catch(({error})=>{
+                    this.processing = false;
+                });
             }
         },
         async additionalSecurity(){
             const { valid } = await this.$refs.form_additional_security.validate();
             if(valid){
-                this.step = 5;
+                this.processing = true;
+                axios.post('/api/register',{ action: 'additional-security', email: this.email , password: this.password }).then(response=>{
+                    this.processing = false;
+                    this.step = 5;
+                }).catch(({error})=>{
+                    this.processing = false;
+                });
             }
         },
         async location(){
             const { valid } = await this.$refs.form_location.validate();
             if(valid){
-                this.step = 6;
+                this.processing = true;
+                axios.post('/api/register',{ action: 'location', email: this.email , country: this.country , city: this.city , town: this.town }).then(response=>{
+                    this.processing = false;
+                    this.step = 6;
+                }).catch(({error})=>{
+                    this.processing = false;
+                });
             }
         },
         async additionalInformation(){
             const { valid } = await this.$refs.form_additional_info.validate();
             if(valid){
-                this.step = 7;
+                this.processing = true;
+                axios.post('/api/register',{ action: 'additional-info', email: this.email , nationality: this.nationality.country_id , passport: this.passport_country.country_id , birth_date: this.birth_date }).then(response=>{
+                    this.processing = false;
+                    this.step = 7;
+                }).catch(({error})=>{
+                    this.processing = false;
+                });
             }
         },
         sameAsPhone(e){

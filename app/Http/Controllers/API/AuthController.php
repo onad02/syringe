@@ -40,12 +40,14 @@ class AuthController extends Controller
                     $otp = Cache::get($request->email);
                     if($otp == $request->otp){
 
-                        $user = new ApplicantMaster;
-                        $user->email_id = $request->email;
-                        $user->email_verified = 'Y';
-                        $user->registered_type = 'W';
-                        $user->registered_on = Carbon::now()->format('d/m/Y');
-                        $user->save();
+                        $user = ApplicantMaster::updateOrCreate(
+                            ['email_id' =>  $request->email],
+                            [
+                                'email_verified' => 'Y',
+                                'registered_type' => 'W',
+                                'registered_on' =>  Carbon::now()->format('d/m/Y')
+                            ]
+                        );
 
                         return response()->json([
                             'message' => 'Success! OTP successfully verified!'
@@ -58,12 +60,13 @@ class AuthController extends Controller
                     'message' => 'OTP is incorrect!'
                 ], 404);
 
-            } else if($action == 'personal-detail'){
+            } else if($action == 'personal-details'){
 
-                $user = User::updateOrCreate(
-                    ['email' =>  $request->email],
+                $user = ApplicantMaster::updateOrCreate(
+                    ['email_id' =>  $request->email],
                     [
                         'applicant_name' => $request->name,
+                        'gender' => $request->gender,
                         'mobile_number' => $request->mobile_number,
                         'whats_app' => $request->whats_app,
                     ]
@@ -73,9 +76,98 @@ class AuthController extends Controller
                     'message' => 'Success! Personal details saved!'
                 ], 200);
 
+            } else if($action == 'additional-security'){
+
+                $user = ApplicantMaster::updateOrCreate(
+                    ['email_id' =>  $request->email],
+                    [
+                        'password' => bcrypt($request->password)
+                    ]
+                );
+
+                return response()->json([
+                    'message' => 'Success! Password saved!'
+                ], 200);
+
+            } else if($action == 'location'){
+
+                if(!isset($request->country['country_id'])){
+                    $country = CountryMaster::create(
+                        [
+                            'user_id' => 1,
+                            'country_name' => ucwords($country),
+                            'date_added' => Carbon::now()->toDateString(),
+                            'active' => 'Y'
+                        ]
+                    );
+                } 
+                $country_id = $country->country_id ?? $request->country['country_id'];
+
+                if(!isset($request->city['city_id'])){
+                    $city = new CityMaster;
+                    $city->user_id = 1;
+                    $city->city_name = ucwords($request->city);
+                    $city->country_id = $country_id;
+                    $city->date_added = Carbon::now()->toDateString();
+                    $city->active = 'Y';
+                    $city->save();
+                }
+                $city_id = $request->city['city_id'] ?? $city->city_id;
+
+                if(!isset($request->town['town_id'])){
+                    $town = new TownMaster;
+                    $town->user_id = 1;
+                    $town->town_name = ucwords($request->town);
+                    $town->city_id = $city_id;
+                    $town->date_added = Carbon::now()->toDateString();
+                    $town->save();
+                }
+                $town_id = $town->town_id ?? $request->town['town_id'];
 
 
-            }
+                $user = ApplicantMaster::updateOrCreate(
+                    ['email_id' =>  $request->email],
+                    [
+                        'country_id' => $country_id,
+                        'city_id' => $city_id,
+                        'town_id' => $town_id,
+                    ]
+                );
+
+                return response()->json([
+                    'message' => 'Success! Location saved!'
+                ], 200);
+
+            } else if($action == 'additional-info'){
+
+                $user = ApplicantMaster::updateOrCreate(
+                    ['email_id' =>  $request->email],
+                    [
+                        'nationality' => $request->nationality,
+                        'passport' => $request->passport,
+                        'dob' => $request->birth_date,
+                        'whats_app' => $request->whats_app,
+                    ]
+                );
+
+                return response()->json([
+                    'message' => 'Success! Additional Info saved!'
+                ], 200);
+
+            } else if($action == 'skills'){
+
+                $user = ApplicantMaster::updateOrCreate(
+                    ['email_id' =>  $request->email],
+                    [
+                        'sgm_id' => $request->skill
+                    ]
+                );
+
+                return response()->json([
+                    'message' => 'Success! Skill saved!'
+                ], 200);
+
+            } 
 
             
         }
