@@ -43,22 +43,17 @@
 
         <nav class="site-navbar site-navbar-target fixed-top elevation-1" >
             <div class="container" v-if="currentRouteName == 'signup' ">
-                <div class="d-flex justify-space-between  bg-surface-variant">
-                  <v-sheet class="py-5 py-md-3">
+                <div class="d-flex align-center">
+                  <v-sheet class="py-5 py-md-3 pr-2">
                     <div class="site-logo">
                         <router-link :to="{name:'home'}" class="font-weight-bold text-danger">
                             <img :src="'/images/'+website_infos.app_logo" alt="">
                         </router-link>
+                        
                      </div>
                   </v-sheet>
-
-                  <v-sheet class="py-5 py-md-3">
-                    <span class="d-inline-block d-lg-block">
-                             <a class="navbar__burger js-menu-toggle">
-                                <img src="/images/man.png" class="avatar"> 
-                                <img src="/images/menu.png" alt="profile-burger" class="menu-arrow"/>
-                            </a>
-                         </span>   
+                  <v-sheet class="px-5 border-left">
+                    <h3 class="mt-2">Sign-up  / Login</h3>
                   </v-sheet>
                 </div>
               </div>
@@ -81,17 +76,21 @@
                          <div class="text-center" v-if="authenticated">
                             <v-btn  color="red"  block  @click="logout">Logout</v-btn>
                          </div>
-                         <div class="navbar__signup  text-center"  v-else>
-                            <router-link :to="{name:'signup'}" class="text-white">Sign Up / Register</router-link>
-                         </div>
+                         <router-link :to="{name:'signup'}" class="text-white" v-else>
+                             <div class="navbar__signup  text-center"  >
+                                Sign Up / Register
+                             </div>
+                         </router-link>
                      </div>
                      <div class="col-6  order-2 text-right d-lg-none d-sm-block d-xl-none">
                          <div class="text-center" v-if="authenticated">
                             <v-btn  color="red"  block @click="logout">Logout</v-btn>
                          </div>
-                         <div class="navbar__signup  text-center"  v-else>
-                            <router-link :to="{name:'signup'}" class="text-white">Sign Up / Register</router-link>
-                         </div>
+                         <router-link :to="{name:'signup'}" class="text-white" v-else>
+                             <div class="navbar__signup  text-center"  >
+                                Sign Up / Register
+                             </div>
+                            </router-link>
                      </div>
                      
                      <div class="col-2 order-2 text-right">
