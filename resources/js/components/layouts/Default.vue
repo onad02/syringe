@@ -4,9 +4,14 @@
             <Main/>
         </template>
         <template #fallback>
-            <v-overlay :value="overlay">
-              <v-progress-circular indeterminate size="64"></v-progress-circular>
-            </v-overlay>
+            <div class="overlay">
+                <div class="overlayDoor"></div>
+                <div class="overlayContent">
+                    <div class="loader">
+                        <div class="inner"></div>
+                    </div>
+                </div>
+            </div>
         </template>
     </Suspense>    
 </template>

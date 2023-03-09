@@ -17,6 +17,8 @@ Route::get('{any}', function () {
     return view('layouts.app');
 })->where('any', '.*');
 
-Auth::routes();
+Route::post('login', [App\Http\Controllers\AuthController::class, 'postLogin'])->name('login'); 
+Route::post('register', [App\Http\Controllers\AuthController::class, 'postRegistration'])->name('registration');
+Route::post('logout', [App\Http\Controllers\AuthController::class, 'postLogout'])->name('logout');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

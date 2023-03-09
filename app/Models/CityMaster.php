@@ -10,4 +10,16 @@ class CityMaster extends Model
     use HasFactory;
 
     protected $table = 'city_master';
+
+    public $timestamps = false;
+
+    protected $primaryKey = 'city_id';
+
+    protected $fillable = [
+        'city_name',
+        'country_id',
+        'user_id',
+        'date_added',
+        'active'
+    ];
 }

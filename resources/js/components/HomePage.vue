@@ -201,7 +201,7 @@
               <div class="row justify-content-center">
                 <div class="col-lg-3 col-md-6 col-sm-6 px-2">
                   <!-- Image Box -->
-                  <router-link :to="{name:'register'}" class="img-box hover-effect">
+                  <router-link :to="{name:'signup'}" class="img-box hover-effect">
 
                     <v-img
                         src="https://the-syringe.com/images/jobseeker.jpg"
@@ -226,7 +226,9 @@
                     <div class="overlay"></div>
                     <div class="img-box-content visible">
                       <h4 class="mb-3">Job Seekers</h4>
-                      <button class="btn btn-job text-white rounded-0">Signup / Register</button>
+                        <router-link :to="{name:'signup'}" class="btn btn-job text-white rounded-0">
+                          Signup / Register
+                        </router-link>
                     </div>
                   </router-link>
                 </div>
@@ -296,19 +298,34 @@
     </div>
 </template>
 
-<script setup>
-    import { ref } from 'vue'
-    const skills = ref([]);
-    const major_cities = ref([]);
-    const employer_setting = ref([]);
-    const website_infos = ref([]);
 
-    const { data } = await axios.get('/api/home-data');
-    skills.value = data.skills;
-    major_cities.value = data.major_cities;
-    employer_setting.value = data.employer_setting;
-    website_infos.value = data.website_infos;
+<script>
+  import {mapActions} from 'vuex'
+  export default {
+      name:"default-layout",
+      data(){
+          return {
+              user: this.$store.state.auth.user,
+              skills: [],
+              major_cities: [],
+              employer_setting: [],
+              website_infos: [],
+              filterEmployerSetting: [],
+          }
+      },
+      created(){
+          this.data();
+      },
+      methods:{
+          async data(){
+              const { data } = await axios.get('/api/home-data');
+              this.skills = data.skills;
+              this.major_cities = data.major_cities;
+              this.employer_setting = data.employer_setting;
+              this.website_infos = data.website_infos;
 
-    const filterEmployerSetting = employer_setting.value.slice(1, 5);
-
+              this.filterEmployerSetting = this.employer_setting.slice(1, 5);
+          }
+      }
+  }
 </script>

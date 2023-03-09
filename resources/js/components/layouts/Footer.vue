@@ -73,14 +73,24 @@
 	                        <h3>Jobseekers</h3>
 	                        <p>Sign Up and be part of our community of Healthcare Jobs around the world. Please type your email and press get started.</p>
 	                     </div>
-	                     <form class="bloq-email mailchimp form-inline" method="post" novalidate="true">
-	                        <label for="subscribeEmail" class="error"></label>
-	                        <div class="email">
-	                           <input type="email" id="subscribeEmail" name="EMAIL" placeholder="Enter Your Email">
-	                           <input type="button" value="Get started">
-	                           <p class="subscription-success"></p>
-	                        </div>
-	                     </form>
+	                     <v-form ref="form"  lazy-validation>
+                              <v-text-field
+                                v-model="email"
+                                label="Enter Your Email"
+                                :rules="emailRules"
+                                type="email"
+                                variant="solo"
+                              ></v-text-field>
+
+                                <v-btn
+                                  :loading="processing"
+                                  :disabled="processing"
+                                  color="pink"  size="large" block
+                                  @click="register"
+                                >
+                                  Get started
+                                </v-btn>
+                            </v-form>
 	                  </div>
 	               </div>
 	            </div>
@@ -113,9 +123,40 @@
 	</div>
 </template>
 
-<script setup>
-    const props = defineProps({
-      website_infos: Object,
-      skills: Object
-    });
+<script>
+  import {mapActions} from 'vuex'
+  import { useRoute } from 'vue-router';
+  export default {
+        name:"default-layout",
+        props: ['website_infos','skills'],
+        data(){
+            return {
+             	processing: false,
+             	email: '',
+            	emailRules: [
+              	v => !!v || 'E-mail is required',
+              	v => /^(([^<>()[\]\\.,;:\s@']+(\.[^<>()\\[\]\\.,;:\s@']+)*)|('.+'))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v) || 'E-mail must be valid',
+            	],
+            }
+        },
+        methods:{
+          async register(){
+	            const { valid } = await this.$refs.form.validate();
+	            if(valid){
+	                this.processing = true;
+	                axios.post('/api/register',{ action: 'send-otp', email: this.email }).then(response=>{
+	                		this.processing = false;
+	                 		this.email = '';
+								      this.$router.push({
+								        name: "signup", 
+								        //state: { step: 2}
+								        query: { step: 2, email: this.email }
+								      });
+	                }).catch(({error})=>{
+	                    this.processing = false;
+	                });
+	            }
+	        },
+        }	
+      }
 </script>

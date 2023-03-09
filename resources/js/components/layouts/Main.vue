@@ -2,7 +2,11 @@
     <div>
         <Navbar v-bind:website_infos="website_infos"/>
         <main role="main">
-            <router-view></router-view>
+            <router-view v-slot="{ Component }">
+                <transition name="fade" mode="out-in">
+                  <component :is="Component" />
+                </transition>
+            </router-view>
         </main>
         <Footer v-bind:website_infos="website_infos" v-bind:skills="skills"/>
     </div>

@@ -21,6 +21,9 @@ export default defineConfig({
             },
         }),
     ],
+    commonjsOptions: {
+      esmExternals: true,
+    },
     resolve: {
         alias: {
             vue: 'vue/dist/vue.esm-bundler.js',

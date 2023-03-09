@@ -15,7 +15,10 @@ return [
     |
     */
 
-    'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', 'localhost,127.0.0.1')),
+    'stateful' => explode(',', env(
+        'SANCTUM_STATEFUL_DOMAINS',
+        'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1,syringe.test,syringe.test:8080,syringe.test:80'
+    )),
 
     /*
     |--------------------------------------------------------------------------
@@ -29,7 +32,7 @@ return [
     |
     */
 
-    'guard' => ['web'],
+    'guard' => ['applicant'],
 
     /*
     |--------------------------------------------------------------------------

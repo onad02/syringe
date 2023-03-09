@@ -65,12 +65,12 @@ const routes =  [
                 }
             },
             {
-                name: "register",
-                path: "/register",
+                name: "signup",
+                path: "/signup",
                 component: Register,
                 meta: {
                     middleware: "guest",
-                    title: `Register`
+                    title: `Signup`
                 }
             },
             {

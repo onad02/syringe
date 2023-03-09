@@ -10,16 +10,37 @@ import { createApp } from 'vue';
 import Router from '@/router';
 import store from '@/store';
 // Vuetify
-import 'vuetify/styles'
-import { createVuetify } from 'vuetify'
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
+import "vuetify/styles";
+import "@mdi/font/css/materialdesignicons.min.css";
+import { createVuetify } from "vuetify";
+import * as components from "vuetify/components";
+import * as directives from "vuetify/directives";
+import { aliases, fa } from 'vuetify/iconsets/fa'
+import { mdi } from 'vuetify/iconsets/mdi'
+
+import { VueMaskDirective } from 'v-mask';
+
+const vMaskV2 = VueMaskDirective;
+const vMaskV3 = {
+    beforeMount: vMaskV2.bind,
+    updated: vMaskV2.componentUpdated,
+    unmounted: vMaskV2.unbind
+};
+
+import 'maz-ui/css/main.css'
 
 const vuetify = createVuetify({
   components,
   directives,
-})
-
+  icons: {
+    defaultSet: 'fa',
+    aliases,
+    sets: {
+      fa,
+      mdi,
+    }
+  },
+});
 
 /**
  * Next, we will create a fresh Vue application instance. You may then begin
@@ -31,6 +52,7 @@ const app = createApp({});
 app.use(Router);
 app.use(store);
 app.use(vuetify);
+app.directive('mask', vMaskV3)
 
 
 /**
