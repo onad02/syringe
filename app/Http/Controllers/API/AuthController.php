@@ -17,6 +17,61 @@ use Cache;
 
 class AuthController extends Controller
 {
+
+    public function login(Request $request)
+    {
+        if($request->has('action')){
+
+            $user = ApplicantMaster::where('email_id',$request->email)->first();
+            if($user){
+
+                if($request->action == 'login-password'){
+
+                    if (auth()->guard('applicant')->attempt(['email_id' => $request->email, 'password' => $request->password])) {
+                        return response()->json([
+                            'success' => 'Successfully loggedin!'
+                        ], 200);
+                    }
+
+                    return response()->json([
+                        'message' => 'Error! Incorrect password!'
+                    ], 500);
+
+                } else if($request->action == 'login-otp'){
+
+                    if (Cache::has($request->email)) {
+
+                        $otp = Cache::get($request->email);
+                        if($otp == $request->otp){
+
+                            auth()->guard('applicant')->login($user);
+                            
+                            return response()->json([
+                                'success' => 'Successfully loggedin!'
+                            ], 200);
+                        }
+
+                        return response()->json([
+                            'message' => 'Error! Incorrect OTP!'
+                        ], 500);
+                    }
+
+                } else if($request->action == 'send-login-otp'){
+                    //send otp
+                    $otp = mt_rand(1000,9999);
+                    Cache::put($request->email, $otp, now()->addMinutes(10));
+
+                    Mail::to($request->email)->send(new EmailVerification($otp));
+
+                    return response()->json([
+                        'message' => 'Success! OTP successfully sent!'
+                    ], 200);
+  
+                } 
+            }
+        }
+    }
+
     public function register(Request $request)
     {   
         if($request->has('action')){
@@ -24,15 +79,27 @@ class AuthController extends Controller
             $action = $request->action;
             if($action == 'send-otp'){
 
-                $otp = mt_rand(1000,9999);;
-                Cache::put($request->email, $otp, now()->addMinutes(10));
+                //lets check first if email already exist
+                $user = ApplicantMaster::where('email_id',$request->email)->first();
+                if($user){
 
-                Mail::to($request->email)->send(new EmailVerification($otp));
+                    //login user
+                    return response()->json([
+                        'user_found' => true
+                    ], 200);
 
-                return response()->json([
-                    'message' => 'Success! OTP successfully emailed!'
-                ], 200);
+                } else {
 
+                    //send otp
+                    $otp = mt_rand(1000,9999);;
+                    Cache::put($request->email, $otp, now()->addMinutes(10));
+
+                    Mail::to($request->email)->send(new EmailVerification($otp));
+
+                    return response()->json([
+                        'user_found' => false
+                    ], 200);
+                }
             } else if($action == 'verify-otp'){
 
                 if (Cache::has($request->email)) {

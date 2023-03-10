@@ -18,7 +18,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
+Route::post('/login', [App\Http\Controllers\API\AuthController::class, 'login'])->name('login');
 Route::post('/register', [App\Http\Controllers\API\AuthController::class, 'register'])->name('register');
 Route::get('/countries', [App\Http\Controllers\API\AuthController::class, 'countryData'])->name('country-data');
 Route::get('/city', [App\Http\Controllers\API\AuthController::class, 'cityData'])->name('city-data');

@@ -2,14 +2,18 @@
 
     <div class="d-flex align-center flex-column h-100 bg-signup">
        <v-container  class="px-0">
-            <v-row align="center">
-                <v-col class="pa-0 pa-md-5" align-self="center" cols="12" sm="12" md="12" lg="8" offset-lg="2">
+            <v-row align="center" justify="center">
+                <v-col class="pa-0 pa-md-5" align-self="center" cols="12" sm="12" md="12" lg="7">
                     <v-sheet class="mx-auto p-3"  width="100%" >
                         <v-row align="center" no-gutters v-if="step == 1" transition="slide-x-transition">
                           <v-col cols="12" sm="12" md="6" class="justify-center align-center pa-5">
                             <h3>Email ID</h3>
                             <p>Please enter your email and press Continue</p>
                             <v-form ref="form" class="mx-2" lazy-validation>
+
+                                <!-- <v-alert v-show="sending_otp_login" transition="slide-y-reverse-transition" class="mb-2" type="info" text="Sending OTP ..."></v-alert> -->
+                                <v-alert v-show="login_error.error" transition="slide-y-reverse-transition" class="mb-2" type="error" :text="login_error.message"></v-alert>
+
                               <v-text-field
                                 density="comfortable"
                                 v-model="email"
@@ -18,8 +22,26 @@
                                 type="email"
                                 variant="solo"
                               ></v-text-field>
-
-                                <v-btn
+                                <v-sheet v-if="show_login" >
+                                    <div v-if="password_login">
+                                        <v-text-field density="comfortable" v-model="current_password" type="password"  label="Password" variant="solo" :rules="[v => !!v || 'Password is required']" hide-details="auto"> </v-text-field>   
+                                        <p class="text-danger">Forgot Password ? Use  <a href="javascript:void(0);" @click="sendLoginOTP">OTP</a> instead</p>
+                                    </div>
+                                    <div v-else>
+                                        <v-text-field
+                                                density="comfortable"
+                                              v-model="login_otp"
+                                              label="OTP"
+                                              type="input"
+                                              variant="solo"
+                                              :rules="[v => !!v || 'OTP is required']"
+                                              hide-details="auto"
+                                            ></v-text-field>
+                                        <p class="text-danger">Use  <a href="javascript:void(0);" @click="password_login = true">Password</a> instead</p>
+                                    </div>
+                                     
+                                </v-sheet>
+                                <v-btn v-if="!show_login"
                                   :loading="processing"
                                   :disabled="processing"
                                   color="pink"  size="large" block class="mt-2"
@@ -27,10 +49,36 @@
                                 >
                                   Continue
                                 </v-btn>
+                                <v-btn v-else
+                                  :loading="processing"
+                                  :disabled="processing"
+                                  color="pink"  size="large" block class="mt-2"
+                                  @click="login"
+                                >
+                                  Next
+                                </v-btn>
                             </v-form>
                           </v-col>
                           <v-divider class="border-opacity-75 d-none d-sm-block" color="grey" vertical></v-divider>
-                          <v-divider  class="border-opacity-75 d-block d-sm-none" color="grey"></v-divider>
+                            <v-container class="d-block d-sm-none">
+                              <v-row align="center">
+                                <v-col cols="5">
+                                  <v-sheet class="border">
+                                    
+                                  </v-sheet>
+                                </v-col>
+                                <v-col cols="2">
+                                  <v-sheet class=" text-center">
+                                    <h3>OR</h3>
+                                  </v-sheet>
+                                </v-col>
+                                <v-col cols="5">
+                                  <v-sheet class="border">
+                                    
+                                  </v-sheet>
+                                </v-col>
+                              </v-row>
+                            </v-container>
                           <v-col cols="12" sm="12" md="6" class="justify-center align-center text-center pa-5">
                             <h3>Social Media</h3>
                             <p>Please select anyone from below</p>
@@ -432,6 +480,11 @@ export default {
               v => !!v || 'E-mail is required',
               v => /^(([^<>()[\]\\.,;:\s@']+(\.[^<>()\\[\]\\.,;:\s@']+)*)|('.+'))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v) || 'E-mail must be valid',
             ],
+            current_password: '',
+            login_otp: '',
+            sending_otp_login: false,
+            password_login: true,
+            login_error: { error: false, message: ''},
             otp: '',
             otp_error: false,
             otp_resend: false,
@@ -467,6 +520,7 @@ export default {
             processing_resend: false,
             processing_otp: false,
             step: 1,
+            show_login: false
         }
     },
     created(){
@@ -525,13 +579,57 @@ export default {
                  console.log(error)
             });
         },
+        async login(){
+            const { valid } = await this.$refs.form.validate();
+            if(valid){
+                this.processing = true;
+                if(this.password_login){
+
+                    await axios.post('/api/login',{ action: 'login-password' ,  email: this.email, password: this.current_password }).then(response=>{
+                        this.processing = false;
+                        this.signIn();
+                        this.$router.push({name:"home"});
+                    }).catch(({error})=>{
+                        this.processing = false;
+                        this.login_error = { error: true, message: 'Wrong Password!' };
+                        setTimeout(() => this.login_error.error = false, 3000);
+                    });
+
+                } else {
+
+                    await axios.post('/api/login',{ action: 'login-otp' ,  email: this.email, otp: this.login_otp }).then(response=>{
+                        this.processing = false;
+                        this.signIn();
+                        this.$router.push({name:"home"});
+                    }).catch(({error})=>{
+                        this.processing = false;
+                        this.login_error = { error: true, message: 'Invalid OTP!' };
+                        setTimeout(() => this.login_error.error = false, 3000);
+                    });
+                }
+                
+            }
+        },
+        async sendLoginOTP(){
+            //this.sending_otp_login = true;
+            this.password_login = false;
+            await axios.post('/api/login',{ action: 'send-login-otp', email: this.email }).then(response=>{
+                //this.sending_otp_login = false;
+            }).catch(({error})=>{
+                //this.sending_otp_login = false;
+            });
+        },
         async register(){
             const { valid } = await this.$refs.form.validate();
             if(valid){
                 this.processing = true;
                 axios.post('/api/register',{ action: 'send-otp', email: this.email }).then(response=>{
                     this.processing = false;
-                    this.step = 2;
+                    if(response.data.user_found){
+                        this.show_login = true;
+                    } else {
+                        this.step = 2;
+                    }
                 }).catch(({error})=>{
                      console.log(error)
                 });

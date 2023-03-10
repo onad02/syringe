@@ -44,16 +44,22 @@
         <nav class="site-navbar site-navbar-target fixed-top elevation-1" >
             <div class="container" v-if="currentRouteName == 'signup' ">
                 <div class="d-flex align-center">
-                  <v-sheet class="py-5 py-md-3 pr-2">
-                    <div class="site-logo">
+                  <v-sheet class="py-3 pr-0 pr-md-2">
+                    <div class="site-logo signup-logo">
                         <router-link :to="{name:'home'}" class="font-weight-bold text-danger">
                             <img :src="'/images/'+website_infos.app_logo" alt="">
                         </router-link>
                         
                      </div>
                   </v-sheet>
-                  <v-sheet class="px-5 border-left">
-                    <h3 class="mt-2">Sign-up  / Login</h3>
+                  <v-sheet class="flex-grow-1 flex-shrink-0 flex-md-grow-0 flex-md-shrink-1">
+                    <h3 class="ml-0 ml-md-2 mb-0">Sign-up  / Login</h3>
+                  </v-sheet>
+                  <v-sheet class="d-block d-sm-none pl-5">
+                         <a class="navbar__burger js-menu-toggle">
+                            <img src="/images/man.png" class="avatar"> 
+                            <img src="/images/menu.png" alt="profile-burger" class="menu-arrow"/>
+                        </a>
                   </v-sheet>
                 </div>
               </div>
