@@ -35,6 +35,74 @@ class AuthController extends Controller
         ], 500);
 
     }
+
+    public function handleProviderCallback($provider)
+    {
+        $auth = Socialite::driver($provider)->stateless()->user();
+        $email = $auth->getEmail();
+        
+        if ($provider == 'google') {
+
+            $applicantExists = ApplicantMaster::where('email_id', $email)->first();
+            if($applicantExists && $applicantExists->email_verified == 'Y'){
+                
+                $applicantExists->token = $auth->token;
+                $applicantExists->save();
+
+                return redirect('/?provider=' . $provider . '&token=' . $user->token);
+
+            } else {
+
+                return redirect('/signup?provider=' . ucwords($provider) . '&token=' . $auth->token.'&name='.$auth->name.'&avatar='.$auth->avatar_original.'&email='.$email);
+            }
+        }
+    }
+
+    public function postSocialLogin(Request $request, $provider)
+    {
+        $request->validate([
+            'code' => 'required',
+            'provider' => 'required'
+        ]);
+   
+        try {
+            // Socialite will pick response data automatic
+            $auth = Socialite::driver($provider)->stateless()->user();
+            $email = $auth->getEmail();
+
+            if ($provider == 'google') {
+
+                $applicantExists = ApplicantMaster::where('email_id', $email)->first();
+                if($applicantExists && $applicantExists->email_verified == 'Y'){
+                    
+                    $applicantExists->token = $auth->token;
+                    $applicantExists->save();
+
+                    return response()->json([
+                        'provider' => $provider,
+                        'token' => $auth->token,
+                    ]);
+
+                } else {
+
+                    return response()->json([
+                        'provider' => $provider,
+                        'token' => $auth->token,
+                        'name' => $auth->name,
+                        'email' => $email,
+                        'avatar' => $auth->avatar_original,
+                    ]);
+                }
+            }
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Oppes! Something went wrong!'
+            ], 500);
+
+        }
+
+    }
       
 
     public function postRegistration(Request $request)

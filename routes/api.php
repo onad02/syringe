@@ -19,8 +19,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/login', [App\Http\Controllers\API\AuthController::class, 'login'])->name('login');
-Route::get('login/{provider}', [App\Http\Controllers\API\AuthController::class, 'redirectToProvider']);
-Route::get('login/{provider}/callback', [App\Http\Controllers\API\AuthController::class, 'handleProviderCallback']);
+Route::get('auth/{provider}', [App\Http\Controllers\API\AuthController::class, 'redirectToProvider']);
+Route::get('auth/{provider}/callback', [App\Http\Controllers\API\AuthController::class, 'handleProviderCallback']);
 
 Route::post('/register', [App\Http\Controllers\API\AuthController::class, 'register'])->name('register');
 Route::get('/countries', [App\Http\Controllers\API\AuthController::class, 'countryData'])->name('country-data');

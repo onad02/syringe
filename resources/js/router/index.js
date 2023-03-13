@@ -74,6 +74,16 @@ const routes =  [
                 }
             },
             {
+                path: '/auth/:provider/callback',
+                component: {
+                    template: '<div class="auth-component">CALLBACK</div>'
+                },
+                meta: {
+                    middleware: "guest",
+                    title: `Social Login`
+                }
+            },
+            {
                 name: "dashboard",
                 path: "/dashboard",
                 component: Dashboard,

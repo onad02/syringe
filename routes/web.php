@@ -13,17 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('{any}', function () {
-    return view('layouts.app');
-})->where('any', '.*');
-
-Route::post('login', [App\Http\Controllers\AuthController::class, 'postLogin'])->name('login'); 
-Route::post('register', [App\Http\Controllers\AuthController::class, 'postRegistration'])->name('registration');
-Route::post('logout', [App\Http\Controllers\AuthController::class, 'postLogout'])->name('logout');
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-
 //Clear route cache
  Route::get('/route-cache', function() {
      \Artisan::call('route:cache');
@@ -53,3 +42,14 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
      \Artisan::call('optimize:clear');
      return 'View cache cleared';
  });
+
+
+Route::get('{any}', function () {
+    return view('layouts.app');
+})->where('any', '.*');
+
+Route::post('login', [App\Http\Controllers\AuthController::class, 'postLogin'])->name('login'); 
+Route::post('login/{provider}', [App\Http\Controllers\AuthController::class, 'postSocialLogin'])->name('social-login'); 
+Route::get('login/{provider}/callback', [App\Http\Controllers\AuthController::class, 'handleProviderCallback'])->where('provider', '.*');
+Route::post('register', [App\Http\Controllers\AuthController::class, 'postRegistration'])->name('registration');
+Route::post('logout', [App\Http\Controllers\AuthController::class, 'postLogout'])->name('logout');

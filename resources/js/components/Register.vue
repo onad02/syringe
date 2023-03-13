@@ -521,7 +521,8 @@ export default {
             processing_resend: false,
             processing_otp: false,
             step: 1,
-            show_login: false
+            show_login: false,
+            social_data: { code: null,  provider: null}
         }
     },
     created(){
@@ -559,40 +560,34 @@ export default {
         }),
         useAuthProvider(provider, proData) {
           const pro = proData
-
           const ProData = pro || Providers[provider]
           this.$Oauth.authenticate(provider, ProData).then((response) => {
-            console.log(response);
-            const rsp = response
-            if (rsp.code) {
-              responseData.value.code = rsp.code
-              responseData.value.provider = provider
-              //useSocialLogin()
+            if (response.code) {
+              social_data.code = response.code
+              social_data.provider = provider
+              useSocialLogin()
             }
           }).catch((err) => {
             console.log(err)
           })
         },
         useSocialLogin() {
-          // otp from input Otp form
-          // hash user data in your backend with Cache or save to database
-          const pdata = { code: responseData.value.code, otp: data.value.tok, hash: hash.value }
-          box.$axios.post('/social-login/' + responseData.value.provider, pdata).then(async (response) => {
+
+          axios.post('/social-login/' + this.social_data.provider, { code: this.social_data.code }).then(async (response) => {
               // `response` data base on your backend config
-            if (response.data.status === 444) {
-              hash.value = response.data.hash
-              fauth.value = true // Option show Otp form incase you using 2fa or any addition security apply to your app you can handle all that from here
+            // if (response.data.status === 444) {
+            //   hash.value = response.data.hash
+            //   fauth.value = true // Option show Otp form incase you using 2fa or any addition security apply to your app you can handle all that from here
 
-            }else if (response.data.status === 445) {
-              //do something Optional
+            // }else if (response.data.status === 445) {
+            //   //do something Optional
 
-            }else {
+            // }else {
 
-              await useLoginFirst(response.data.u)
-            }
+            //   await useLoginFirst(response.data.u)
+            // }
           }).catch((err) => {
-
-            console.log(err)
+              console.log(err)
           })
         },
         async processRegister(){
