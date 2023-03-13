@@ -242,48 +242,52 @@ class AuthController extends Controller
 
     }
 
-    public function redirectToProvider($provider)
+    public function socialLogin(Request $request, $provider)
     {
-        return response()->json([
-            'target_url' => Socialite::driver($provider)->stateless()->redirect()->getTargetUrl(),
-        ]);
-    }
+        // $request->validate([
+        //     'code' => 'required',
+        //     'provider' => 'required'
+        // ]);
+   
+        try {
+            // Socialite will pick response data automatic
+            $auth = Socialite::driver($provider)->stateless()->user();
+            $email = $auth->getEmail();
 
+            if ($provider == 'google') {
 
-    public function handleProviderCallback($provider)
-    {
-        $auth = Socialite::driver($provider)->stateless()->user();
-        $email = $auth->getEmail();
-        
-        if ($provider == 'google') {
+                $applicantExists = ApplicantMaster::where('email_id', $email)->first();
+                if($applicantExists && $applicantExists->email_verified == 'Y'){
+                    
+                    $applicantExists->token = $auth->token;
+                    $applicantExists->save();
 
-            $applicantExists = ApplicantMaster::where('email_id', $email)->first();
-            if($applicantExists && $applicantExists->email_verified == 'Y'){
-                
-                $applicantExists->token = $auth->token;
-                $applicantExists->save();
+                    return response()->json([
+                        'provider' => $provider,
+                        'token' => $auth->token,
+                    ]);
 
-                return response()->json([
-                    'provider' => $provider,
-                    'token' => $auth->token,
-                ]);
+                } else {
 
-            } else {
-
-                return response()->json([
-                    'provider' => $provider,
-                    'token' => $auth->token,
-                    'name' => $auth->name,
-                    'email' => $email,
-                    'avatar' => $auth->avatar_original,
-                ]);
+                    return response()->json([
+                        'provider' => $provider,
+                        'token' => $auth->token,
+                        'name' => $auth->name,
+                        'email' => $email,
+                        'avatar' => $auth->avatar_original,
+                    ]);
+                }
             }
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Oppes! Something went wrong!'
+            ], 500);
+
         }
-        
 
-        return redirect('/');
     }
-
+      
     public function skillsData(Request $request)
     {   
         $skills = SkillGroupMaster::select('sgm_id','group_name','image')->get();

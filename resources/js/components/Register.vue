@@ -563,17 +563,14 @@ export default {
           const ProData = pro || Providers[provider]
           this.$Oauth.authenticate(provider, ProData).then((response) => {
             if (response.code) {
-              social_data.code = response.code
-              social_data.provider = provider
-              useSocialLogin()
+              this.useSocialLogin(provider,response)
             }
           }).catch((err) => {
             console.log(err)
           })
         },
-        useSocialLogin() {
-
-          axios.post('/social-login/' + this.social_data.provider, { code: this.social_data.code }).then(async (response) => {
+        useSocialLogin(provider,response) {
+          axios.post('/social-login/'+provider, response).then(response => {
               // `response` data base on your backend config
             // if (response.data.status === 444) {
             //   hash.value = response.data.hash
