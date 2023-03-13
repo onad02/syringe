@@ -570,7 +570,7 @@ export default {
           })
         },
         useSocialLogin(provider,response) {
-          axios.post('/social-login/'+provider, response).then(response => {
+          axios.post('/api/login/'+provider, response).then(response => {
               // `response` data base on your backend config
             // if (response.data.status === 444) {
             //   hash.value = response.data.hash
