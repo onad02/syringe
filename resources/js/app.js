@@ -27,6 +27,23 @@ const vMaskV3 = {
     unmounted: vMaskV2.unbind
 };
 
+import axios from 'axios'
+import {UniversalSocialauth} from 'universal-social-auth'
+const options = {
+  providers: {
+    google: {
+      clientId: '508636168520-sedcjq1iqbiiprq60e0mdbs2t1i87rvd.apps.googleusercontent.com',
+      redirectUri: 'https://the-syringe.com/auth/google/callback'
+    },
+    facebook: {
+      clientId: '************',
+      redirectUri: 'https://myapp.com/auth/facebook/callback'
+    }
+  }
+}
+
+const Oauth = new UniversalSocialauth(axios, options)
+
 import 'maz-ui/css/main.css'
 
 const vuetify = createVuetify({
@@ -52,7 +69,10 @@ const app = createApp({});
 app.use(Router);
 app.use(store);
 app.use(vuetify);
+app.use(Oauth, Oauth);
 app.directive('mask', vMaskV3)
+
+app.config.globalProperties.$Oauth = Oauth;
 
 
 /**

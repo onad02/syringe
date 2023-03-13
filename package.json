@@ -22,6 +22,7 @@
         "jquery": "^3.6.3",
         "libphonenumber-js": "^1.10.21",
         "maz-ui": "^3.7.0",
+        "universal-social-auth": "^0.2.6",
         "v-mask": "^2.3.0",
         "vue-loader": "^17.0.1",
         "vue-router": "^4.1.6",

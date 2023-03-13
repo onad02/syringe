@@ -91,7 +91,7 @@
                               </v-col>
 
                               <v-col>
-                                <v-btn
+                                <v-btn  @click="useAuthProvider('google', Google)"
                                   icon="fa-brands fa-google-plus-g"
                                   color="red"
                                 ></v-btn>
@@ -463,6 +463,7 @@
 <script>
 import { mapActions } from 'vuex'
 import MazPhoneNumberInput from 'maz-ui/components/MazPhoneNumberInput'
+import { Providers} from 'universal-social-auth'
 export default {
     name:'register',
     components: {
@@ -556,6 +557,44 @@ export default {
         ...mapActions({
             signIn:'auth/login'
         }),
+        useAuthProvider(provider, proData) {
+          const pro = proData
+
+          const ProData = pro || Providers[provider]
+          this.$Oauth.authenticate(provider, ProData).then((response) => {
+            console.log(response);
+            const rsp = response
+            if (rsp.code) {
+              responseData.value.code = rsp.code
+              responseData.value.provider = provider
+              //useSocialLogin()
+            }
+          }).catch((err) => {
+            console.log(err)
+          })
+        },
+        useSocialLogin() {
+          // otp from input Otp form
+          // hash user data in your backend with Cache or save to database
+          const pdata = { code: responseData.value.code, otp: data.value.tok, hash: hash.value }
+          box.$axios.post('/social-login/' + responseData.value.provider, pdata).then(async (response) => {
+              // `response` data base on your backend config
+            if (response.data.status === 444) {
+              hash.value = response.data.hash
+              fauth.value = true // Option show Otp form incase you using 2fa or any addition security apply to your app you can handle all that from here
+
+            }else if (response.data.status === 445) {
+              //do something Optional
+
+            }else {
+
+              await useLoginFirst(response.data.u)
+            }
+          }).catch((err) => {
+
+            console.log(err)
+          })
+        },
         async processRegister(){
             await axios.get('/sanctum/csrf-cookie')
             await axios.post('/register',{ action: 'skills', email: this.email, skill : this.skill }).then(response=>{

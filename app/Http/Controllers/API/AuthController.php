@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Mail\EmailVerification;
+use Laravel\Socialite\Facades\Socialite;
 use App\Models\ApplicantMaster;
 use App\Models\SkillGroupMaster;
 use App\Models\CountryMaster;
@@ -239,6 +240,48 @@ class AuthController extends Controller
             
         }
 
+    }
+
+    public function redirectToProvider($provider)
+    {
+        return response()->json([
+            'target_url' => Socialite::driver($provider)->stateless()->redirect()->getTargetUrl(),
+        ]);
+    }
+
+
+    public function handleProviderCallback($provider)
+    {
+        $auth = Socialite::driver($provider)->stateless()->user();
+        $email = $auth->getEmail();
+        
+        if ($provider == 'google') {
+
+            $applicantExists = ApplicantMaster::where('email_id', $email)->first();
+            if($applicantExists && $applicantExists->email_verified == 'Y'){
+                
+                $applicantExists->token = $auth->token;
+                $applicantExists->save();
+
+                return response()->json([
+                    'provider' => $provider,
+                    'token' => $auth->token,
+                ]);
+
+            } else {
+
+                return response()->json([
+                    'provider' => $provider,
+                    'token' => $auth->token,
+                    'name' => $auth->name,
+                    'email' => $email,
+                    'avatar' => $auth->avatar_original,
+                ]);
+            }
+        }
+        
+
+        return redirect('/');
     }
 
     public function skillsData(Request $request)
