@@ -4,7 +4,8 @@
              <div class="site-mobile-menu-header" v-if="authenticated">
                 <v-row no-gutters align="center">
                     <v-col cols="4">
-                      <v-avatar image="/images/man.png" size="x-large"></v-avatar>
+                      <v-avatar v-if="user.image != null" :image="`/images/applicant/${user.image}`" size="x-large"></v-avatar>
+                      <v-avatar v-else image="/images/man.png" size="x-large"></v-avatar>
                     </v-col>
                     <v-col cols="8">
                         <h5 class="mb-0 text-white">{{ user.applicant_name }}</h5>
@@ -103,7 +104,8 @@
                      <div class="col-2 order-2 text-right">
                          <span class="d-inline-block d-lg-block">
                              <a class="navbar__burger js-menu-toggle">
-                                <img src="/images/man.png" class="avatar"> 
+                                <img v-if="authenticated && user.image != null" :src="`/images/applicant/${user.image}`" class="avatar"> 
+                                <img v-else src="/images/man.png" class="avatar"> 
                                 <img src="/images/menu.png" alt="profile-burger" class="menu-arrow"/>
                             </a>
                          </span>                        
