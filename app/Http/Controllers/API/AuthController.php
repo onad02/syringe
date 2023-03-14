@@ -137,7 +137,7 @@ class AuthController extends Controller
                         'gender' => $request->gender,
                         'dob' => $request->birth_date,
                         'registered_on' =>  Carbon::now()->format('d/m/Y'),
-                        'registered_type' => substr($request->provider,0,1)
+                        'registered_type' => ucfirst(substr($request->provider,0,1))
                     ]
                 );
 
@@ -282,36 +282,26 @@ class AuthController extends Controller
 
     public function socialLogin(Request $request, $provider)
     {
-        // $request->validate([
-        //     'code' => 'required',
-        //     'provider' => 'required'
-        // ]);
-   
         try {
-            // Socialite will pick response data automatic
+          
             $auth = Socialite::driver($provider)->stateless()->user();
             $email = $auth->getEmail();
 
             if ($provider == 'google') {
 
                 $applicantExists = ApplicantMaster::where('email_id', $email)->first();
-                if($applicantExists && $applicantExists->email_verified == 'Y'){
+                if($applicantExists && $applicantExists->sgm_id != NULL){
                     
-                    $applicantExists->token = $auth->token;
-                    $applicantExists->save();
-
+                    auth()->guard('applicant')->login($applicantExists);
+                            
                     return response()->json([
-                        'provider' => $provider,
-                        'token' => $auth->token,
-                        'name' => $auth->name,
-                        'email' => $email,
-                        'avatar' => $applicantExists->avatar,
-                        
-                    ]);
+                        'account_exists' => true
+                    ], 200);
 
                 } else {
 
                     return response()->json([
+                        'account_exists' => false,
                         'provider' => $provider,
                         'token' => $auth->token,
                         'name' => $auth->name,

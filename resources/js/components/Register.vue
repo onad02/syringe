@@ -688,28 +688,19 @@ export default {
         },
         useSocialLogin(provider,response) {
           axios.post('/api/login/'+provider, response).then(response => {
+            if(response.data.account_exists){
+              this.signIn();
+              this.$router.push({name:"home"});
+            } else {
+              this.social_auth = true;
+              this.step = 2;
+              this.email = response.data.email;
+              this.name = response.data.name;
+              this.social_data.provider = provider;
+              this.avatar_url = response.data.avatar;
+              this.social_data.token = response.data.token;
+            }
 
-            this.social_auth = true;
-            this.step = 2;
-            this.email = response.data.email;
-            this.name = response.data.name;
-            this.social_data.provider = provider;
-            this.avatar_url = response.data.avatar;
-            this.social_data.token = response.data.token;
-
-
-              // `response` data base on your backend config
-            // if (response.data.status === 444) {
-            //   hash.value = response.data.hash
-            //   fauth.value = true // Option show Otp form incase you using 2fa or any addition security apply to your app you can handle all that from here
-
-            // }else if (response.data.status === 445) {
-            //   //do something Optional
-
-            // }else {
-
-            //   await useLoginFirst(response.data.u)
-            // }
           }).catch((err) => {
               console.log(err)
           })
