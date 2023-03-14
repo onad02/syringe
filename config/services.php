@@ -43,4 +43,10 @@ return [
         'redirect' => env('FACEBOOK_URL','https://the-syringe.com/auth/facebook/callback'),
     ],
 
+    'linkedin' => [
+        'client_id' => '77031j3glcm689',
+        'client_secret' => '8hmYeGBsAZ7wbVKz',
+        'redirect' => 'https://the-syringe.com/auth/linkedin/callback',
+    ], 
+
 ];

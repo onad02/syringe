@@ -36,8 +36,12 @@ const options = {
       redirectUri: 'https://the-syringe.com/auth/google/callback'
     },
     facebook: {
-      clientId: '************',
-      redirectUri: 'https://myapp.com/auth/facebook/callback'
+      clientId: '531929842356807',
+      redirectUri: 'https://the-syringe.com/auth/facebook/callback'
+    },
+    linkedin: {
+      clientId: '77031j3glcm689',
+      redirectUri: 'https://the-syringe.com/auth/linkedin/callback'
     }
   }
 }
