@@ -204,7 +204,7 @@
                           <v-divider class="border-opacity-75 d-none d-sm-block" color="grey" vertical></v-divider>
                           <v-col cols="12" sm="12" md="6" class="justify-center align-center text-center pa-10 d-none d-md-block">
                    
-                            <h3>Please check your email as we have sent an OTP to verify it.</h3>
+                            <h3>Please enter your user information and press Next to continue.</h3>
                             
                           </v-col>
                         </v-row>
@@ -500,7 +500,8 @@
                           </v-col>
                           <v-divider class="border-opacity-75 d-none d-sm-block" color="grey" vertical></v-divider>
                           <v-col cols="12" sm="12" md="6" class="justify-center align-center text-center pa-10 d-none d-md-block">
-                            <h3>Please enter additional information in regards to your Nationlity, Passport Country and Date of Birth.</h3>
+                            <h3 v-if="social_auth">Please enter additional information in regards to your Nationlity and Passport Country.</h3>
+                            <h3 v-else>Please enter additional information in regards to your Nationlity, Passport Country and Date of Birth.</h3>
                           </v-col>
                         </v-row>
                         <v-row align="center" no-gutters v-else-if="step == 7" transition="slide-x-transition">
@@ -629,9 +630,9 @@ export default {
             processing_resend: false,
             processing_otp: false,
             processing_avatar: false,
-            step: 2,
+            step: 1,
             show_login: false,
-            social_auth: true,
+            social_auth: false,
             social_data: { token: null,  provider: null},
             mime_type: '',
             autoCrop: false,

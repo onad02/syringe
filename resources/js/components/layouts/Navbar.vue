@@ -57,7 +57,8 @@
                   </v-sheet>
                   <v-sheet class="d-block d-sm-none pl-5">
                          <a class="navbar__burger js-menu-toggle">
-                            <img src="/images/man.png" class="avatar"> 
+                            <img v-if="authenticated && user.image != null" :src="`/images/applicant/${user.image}`" class="avatar"> 
+                            <img v-else src="/images/man.png" class="avatar"> 
                             <img src="/images/menu.png" alt="profile-burger" class="menu-arrow"/>
                         </a>
                   </v-sheet>

@@ -136,6 +136,7 @@ class AuthController extends Controller
                         'applicant_name' => $request->name,
                         'gender' => $request->gender,
                         'dob' => $request->birth_date,
+                        'registered_on' =>  Carbon::now()->format('d/m/Y')
                         'registered_type' => substr($request->provider,0,1),
                     ]
                 );
