@@ -128,6 +128,43 @@ class AuthController extends Controller
                     'message' => 'OTP is incorrect!'
                 ], 404);
 
+            } else if($action == 'user-information'){
+
+                $user = ApplicantMaster::updateOrCreate(
+                    ['email_id' =>  $request->email],
+                    [
+                        'applicant_name' => $request->name,
+                        'gender' => $request->gender,
+                        'dob' => $request->birth_date,
+                        'registered_type' => substr($request->provider,0,1),
+                    ]
+                );
+
+                if($request->hasFile('avatar')){
+                    $avatar = $request->file('avatar');
+                    $f_name = $avatar->getClientOriginalName();
+                    $file_size = $avatar->getSize();
+                    $file_extension = $avatar->getClientOriginalExtension();
+                    $newfilename = md5($user->applicant_id."_".round(microtime(true))) . '.'.$file_extension;
+                    $avatar->move(public_path('images/applicant/'), $newfilename);
+
+                    if(!empty($user->image) && ($user->registered_type == 'M' || $user->registered_type == 'W')){
+                        unlink(public_path('images/applicant/').$user->image);
+                    }
+                    $user->image = $newfilename;
+                    $user->save();
+                } else if($request->has('avatar')){
+                    $newfilename = md5($user->applicant_id."_".round(microtime(true))) . '.jpg';
+                    $image = file_get_contents($request->avatar);
+                    file_put_contents(public_path('images/applicant/'.$newfilename), $image);
+                    $user->image = $newfilename;
+                    $user->save();
+                }
+
+                return response()->json([
+                    'message' => 'Success! User Information saved!'
+                ], 200);
+
             } else if($action == 'personal-details'){
 
                 $user = ApplicantMaster::updateOrCreate(
@@ -265,6 +302,10 @@ class AuthController extends Controller
                     return response()->json([
                         'provider' => $provider,
                         'token' => $auth->token,
+                        'name' => $auth->name,
+                        'email' => $email,
+                        'avatar' => $applicantExists->avatar,
+                        
                     ]);
 
                 } else {

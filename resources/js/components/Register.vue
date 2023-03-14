@@ -115,9 +115,33 @@
                             
                             <v-form ref="form_user_info" class="mx-2" lazy-validation>
 
-                                  <v-avatar :image="social_data.avatar" size="80"></v-avatar>
-
                                  <v-row align="center" justify="space-between" no-gutters>
+                                    <v-col cols="12" align="center">
+                                      <v-avatar :image="avatar_url" size="80"></v-avatar>
+                                      <br>
+                                      <v-btn color="blue" size="large" class="my-2" :loading="processing_avatar" @click="handleAvatar">
+                                         Upload
+                                      </v-btn>
+                                      <input 
+                                          ref="uploader" 
+                                          class="d-none" 
+                                          type="file" 
+                                          accept="image/png, image/gif, image/jpeg"
+                                          @change="onFileChanged"
+                                      >
+                                      <v-dialog v-model="dialog" width="500">
+                                        <v-card>
+                                          <v-card-text>
+                                            <VueCropper v-show="selectedFile" ref="cropper" :src="selectedFile" alt="Source Image"></VueCropper>
+                                          </v-card-text>
+                                          <v-card-actions>
+                                            <v-spacer></v-spacer>
+                                            <v-btn size="large" color="red"  @click="dialog = false">Cancel</v-btn>
+                                            <v-btn size="large" color="pink"     @click="cropImage(), (dialog = false)">Crop</v-btn>
+                                          </v-card-actions>
+                                        </v-card>
+                                      </v-dialog>
+                                    </v-col>
                                     <v-col cols="4" align="start">
                                         <b>Name</b>
                                     </v-col>
@@ -545,12 +569,15 @@
 import { mapActions } from 'vuex'
 import MazPhoneNumberInput from 'maz-ui/components/MazPhoneNumberInput'
 import { Providers} from 'universal-social-auth'
+import VueCropper from 'vue-cropperjs'
+import 'cropperjs/dist/cropper.css'
 export default {
     name:'register',
     components: {
-        MazPhoneNumberInput
+        MazPhoneNumberInput,
+        VueCropper
     },
-    props: ['data'],
+    props: ['data', 'image_name'],
     data(){
         return {
             countries: [],
@@ -601,10 +628,17 @@ export default {
             processing: false,
             processing_resend: false,
             processing_otp: false,
-            step: 1,
+            processing_avatar: false,
+            step: 2,
             show_login: false,
-            social_auth: false,
-            social_data: { token: null,  provider: null, avatar: null}
+            social_auth: true,
+            social_data: { token: null,  provider: null},
+            mime_type: '',
+            autoCrop: false,
+            selectedFile: '',
+            avatar_url: '/images/man.png',
+            avatar_blob: null,
+            dialog: false
         }
     },
     created(){
@@ -657,9 +691,9 @@ export default {
             this.social_auth = true;
             this.step = 2;
             this.email = response.data.email;
-            this.name = response.data.email;
+            this.name = response.data.name;
             this.social_data.provider = provider;
-            this.social_data.avatar = response.data.avatar;
+            this.avatar_url = response.data.avatar;
             this.social_data.token = response.data.token;
 
 
@@ -789,7 +823,21 @@ export default {
             const { valid } = await this.$refs.form_user_info.validate();
             if(valid){
                 this.processing = true;
-                axios.post('/api/register',{ action: 'user-information', provider: this.social_data.provider, email: this.email, name: this.name, gender: this.gender , birth_date: this.birth_date  }).then(response=>{
+
+                const formData = new FormData()
+                formData.append('action','user-information');
+                formData.append('provider',this.social_data.provider);
+                formData.append('email',this.email);
+                formData.append('name',this.name);
+                formData.append('gender',this.gender);
+                formData.append('birth_date',this.birth_date);
+                if(this.avatar_blob != null){
+                  formData.append('avatar', this.avatar_blob, 'avatar.jpeg');
+                } else {
+                  formData.append('avatar', this.avatar_url);
+                }
+                
+                axios.post('/api/register',formData).then(response=>{
                     this.processing = false;
                     this.step = 3;
                 }).catch(({error})=>{
@@ -844,6 +892,39 @@ export default {
                     this.processing = false;
                 });
             }
+        },
+        handleAvatar() {
+            this.processing_avatar = true;
+
+            // After obtaining the focus when closing the FilePicker, return the button state to normal
+            window.addEventListener('focus', () => {
+                this.processing_avatar = false
+            }, { once: true });
+            
+            // Trigger click on the FileInput
+            this.$refs.uploader.click();
+        },
+        cropImage() {
+          this.avatar_url = this.$refs.cropper.getCroppedCanvas().toDataURL();
+          this.$refs.cropper.getCroppedCanvas().toBlob((blob) => {
+            this.avatar_blob = blob;
+          }, this.mime_type)
+        },
+        onFileChanged(e) {
+          const file = e.target.files[0]
+          this.mime_type = file.type
+          console.log(this.mime_type)
+          if (typeof FileReader === 'function') {
+            this.dialog = true
+            const reader = new FileReader()
+            reader.onload = (event) => {
+              this.selectedFile = event.target.result
+              this.$refs.cropper.replace(this.selectedFile)
+            }
+            reader.readAsDataURL(file)
+          } else {
+            alert('Sorry, FileReader API not supported')
+          }
         },
         sameAsPhone(e){
             if(this.same_phone){
