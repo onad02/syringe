@@ -36,28 +36,6 @@ class AuthController extends Controller
 
     }
 
-    public function handleProviderCallback($provider)
-    {
-        $auth = Socialite::driver($provider)->stateless()->user();
-        $email = $auth->getEmail();
-        
-        if ($provider == 'google') {
-
-            $applicantExists = ApplicantMaster::where('email_id', $email)->first();
-            if($applicantExists && $applicantExists->email_verified == 'Y'){
-                
-                $applicantExists->token = $auth->token;
-                $applicantExists->save();
-
-                return redirect('/?provider=' . $provider . '&token=' . $user->token);
-
-            } else {
-
-                return redirect('/signup?provider=' . ucwords($provider) . '&token=' . $auth->token.'&name='.$auth->name.'&avatar='.$auth->avatar_original.'&email='.$email);
-            }
-        }
-    }
-
     public function postSocialLogin(Request $request, $provider)
     {
         $request->validate([

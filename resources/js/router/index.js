@@ -73,16 +73,12 @@ const routes =  [
                     title: `Signup`
                 }
             },
-            {
-                path: '/auth/:provider/callback',
-                component: {
-                    template: '<div class="auth-component">CALLBACK</div>'
-                },
-                meta: {
-                    middleware: "guest",
-                    title: `Social Login`
-                }
-            },
+            // {
+            //     path: '/auth/:provider/callback',
+            //     redirect: to => {
+            //       return { path: '/signup', query: { provider: to.params.provider, code: to.query.code } }
+            //     },
+            // },
             {
                 name: "dashboard",
                 path: "/dashboard",

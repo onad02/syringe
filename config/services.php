@@ -31,4 +31,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'google' => [
+        'client_id' => '508636168520-sedcjq1iqbiiprq60e0mdbs2t1i87rvd.apps.googleusercontent.com',
+        'client_secret' => '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',
+        'redirect' => 'https://the-syringe.com/auth/google/callback',
+    ], 
+
 ];

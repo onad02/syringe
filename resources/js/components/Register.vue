@@ -108,7 +108,84 @@
                             </v-row>
                           </v-col>
                         </v-row>
-                        <v-row align="center" no-gutters v-else-if="step == 2" transition="slide-x-transition">
+                        <v-row align="center" no-gutters v-else-if="step == 2 && social_auth" transition="slide-x-transition">
+
+                          <v-col cols="12" sm="12" md="6" class="justify-center align-center pa-5">
+                            <h3 class="mb-5">Step 1 - User Information</h3>
+                            
+                            <v-form ref="form_user_info" class="mx-2" lazy-validation>
+
+                                  <v-avatar :image="social_data.avatar" size="80"></v-avatar>
+
+                                 <v-row align="center" justify="space-between" no-gutters>
+                                    <v-col cols="4" align="start">
+                                        <b>Name</b>
+                                    </v-col>
+                                    <v-col cols="8" align="end">
+                                        <v-radio-group class="p-2"  hide-details="auto" v-model="gender" inline :rules="[v => !!v || 'Gender is required']">
+                                        <v-spacer></v-spacer>
+                                          <v-radio hide-details="auto"
+                                            label="Male"
+                                            value="M"
+                                            color="pink"
+                                            class="px-2"
+                                          ></v-radio>
+                                          <v-radio hide-details="auto"
+                                            label="Female"
+                                            value="F"
+                                            color="pink"
+                                            class="px-2"
+                                          ></v-radio>
+                                        </v-radio-group>
+                                    </v-col>
+                                </v-row>
+
+                                <v-text-field
+                                    density="comfortable"
+                                    v-model="name"
+                                    variant="solo"
+                                    :rules="nameRules"
+                                ></v-text-field>
+
+                                <v-text-field
+                                    density="comfortable"
+                                    v-model="email"
+                                    label="Email Address"
+                                    type="email"
+                                    variant="solo"
+                                    readonly
+                                ></v-text-field>
+                                
+
+                                <v-text-field
+                                    density="comfortable"
+                                    label="DD/MM/YYYY"
+                                    v-model="birth_date"
+                                    v-mask="'##/##/####'"
+                                    variant="solo"
+                                    :rules="[v => !!v || 'Date of Birth is required']"
+                                ></v-text-field>
+
+                                <v-btn
+                                  :loading="processing"
+                                  :disabled="processing"
+                                  color="pink"  size="large" block class="mt-2"
+                                  @click="userInformation"
+                                >
+                                  Next
+                                </v-btn>
+                               
+                            </v-form>
+                          </v-col>
+                          <v-divider class="border-opacity-75 d-none d-sm-block" color="grey" vertical></v-divider>
+                          <v-col cols="12" sm="12" md="6" class="justify-center align-center text-center pa-10 d-none d-md-block">
+                   
+                            <h3>Please check your email as we have sent an OTP to verify it.</h3>
+                            
+                          </v-col>
+                        </v-row>
+                        <v-row align="center" no-gutters v-else-if="step == 2 && !social_auth" transition="slide-x-transition">
+
                           <v-col cols="12" sm="12" md="6" class="justify-center align-center pa-5">
                             <h3 class="mb-5">Step 1 - Email Verification</h3>
                             
@@ -189,35 +266,37 @@
                           <v-col cols="12" sm="12" md="6" class="justify-center align-center pa-5">
                             <h3 class="mb-5">Step 2 - Personal Details</h3>
                             <v-form ref="form_personal_details" class="mx-2" lazy-validation>
-                                <v-row align="center" justify="space-between" no-gutters>
-                                    <v-col cols="4" align="start">
-                                        <b>Name</b>
-                                    </v-col>
-                                    <v-col cols="8" align="end">
-                                        <v-radio-group class="p-2"  hide-details="auto" v-model="gender" inline :rules="[v => !!v || 'Gender is required']">
-                                        <v-spacer></v-spacer>
-                                          <v-radio hide-details="auto"
-                                            label="Male"
-                                            value="M"
-                                            color="pink"
-                                            class="px-2"
-                                          ></v-radio>
-                                          <v-radio hide-details="auto"
-                                            label="Female"
-                                            value="F"
-                                            color="pink"
-                                            class="px-2"
-                                          ></v-radio>
-                                        </v-radio-group>
-                                    </v-col>
-                                </v-row>
+                                <v-sheet v-show="!social_auth">
+                                  <v-row align="center" justify="space-between" no-gutters>
+                                      <v-col cols="4" align="start">
+                                          <b>Name</b>
+                                      </v-col>
+                                      <v-col cols="8" align="end">
+                                          <v-radio-group class="p-2"  hide-details="auto" v-model="gender" inline :rules="[v => !!v || 'Gender is required']">
+                                          <v-spacer></v-spacer>
+                                            <v-radio hide-details="auto"
+                                              label="Male"
+                                              value="M"
+                                              color="pink"
+                                              class="px-2"
+                                            ></v-radio>
+                                            <v-radio hide-details="auto"
+                                              label="Female"
+                                              value="F"
+                                              color="pink"
+                                              class="px-2"
+                                            ></v-radio>
+                                          </v-radio-group>
+                                      </v-col>
+                                  </v-row>
 
-                                <v-text-field
-                                    density="comfortable"
-                                    v-model="name"
-                                    variant="solo"
-                                    :rules="nameRules"
-                                ></v-text-field>
+                                  <v-text-field
+                                      density="comfortable"
+                                      v-model="name"
+                                      variant="solo"
+                                      :rules="nameRules"
+                                  ></v-text-field>
+                                </v-sheet>
 
                                 <b>Mobile Number</b>
                                 <MazPhoneNumberInput
@@ -372,15 +451,17 @@
                                     variant="solo"
                                     :rules="[v => !!v || 'Passport Country is required']"
                                 ></v-combobox>
-                                <br>
-                                <v-text-field
-                                    density="comfortable"
-                                    label="DD/MM/YYYY"
-                                    v-model="birth_date"
-                                    v-mask="'##/##/####'"
-                                    variant="solo"
-                                    :rules="[v => !!v || 'Date of Birth is required']"
-                                ></v-text-field>
+                                <v-sheet v-show="!social_auth">
+                                  <br>
+                                  <v-text-field
+                                      density="comfortable"
+                                      label="DD/MM/YYYY"
+                                      v-model="birth_date"
+                                      v-mask="'##/##/####'"
+                                      variant="solo"
+                                      :rules="[v => !!v || 'Date of Birth is required']"
+                                  ></v-text-field>
+                                </v-sheet>
                                 <br>
                                 <v-btn
                                   :loading="processing"
@@ -522,7 +603,8 @@ export default {
             processing_otp: false,
             step: 1,
             show_login: false,
-            social_data: { code: null,  provider: null}
+            social_auth: false,
+            social_data: { token: null,  provider: null, avatar: null}
         }
     },
     created(){
@@ -571,6 +653,16 @@ export default {
         },
         useSocialLogin(provider,response) {
           axios.post('/api/login/'+provider, response).then(response => {
+
+            this.social_auth = true;
+            this.step = 2;
+            this.email = response.data.email;
+            this.name = response.data.email;
+            this.social_data.provider = provider;
+            this.social_data.avatar = response.data.avatar;
+            this.social_data.token = response.data.token;
+
+
               // `response` data base on your backend config
             // if (response.data.status === 444) {
             //   hash.value = response.data.hash
@@ -690,6 +782,18 @@ export default {
                     this.processing_otp = false;
                     this.otp_error = true;
                     setTimeout(() => this.otp_error = false, 3000);
+                });
+            }
+        },
+        async userInformation(){
+            const { valid } = await this.$refs.form_user_info.validate();
+            if(valid){
+                this.processing = true;
+                axios.post('/api/register',{ action: 'user-information', provider: this.social_data.provider, email: this.email, name: this.name, gender: this.gender , birth_date: this.birth_date  }).then(response=>{
+                    this.processing = false;
+                    this.step = 3;
+                }).catch(({error})=>{
+                    this.processing = false;
                 });
             }
         },
