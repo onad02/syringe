@@ -43,13 +43,14 @@ use Illuminate\Support\Facades\Route;
      return 'View cache cleared';
  });
 
+Route::post('login', [App\Http\Controllers\AuthController::class, 'postLogin'])->name('login'); 
+// Route::post('login/{provider}', [App\Http\Controllers\AuthController::class, 'postSocialLogin'])->name('social-login'); 
+// Route::get('login/{provider}/callback', [App\Http\Controllers\AuthController::class, 'handleProviderCallback'])->where('provider', '.*');
+Route::post('register', [App\Http\Controllers\AuthController::class, 'postRegistration'])->name('registration');
+Route::post('logout', [App\Http\Controllers\AuthController::class, 'postLogout'])->name('logout');
 
 Route::get('{any}', function () {
     return view('layouts.app');
 })->where('any', '.*');
 
-Route::post('login', [App\Http\Controllers\AuthController::class, 'postLogin'])->name('login'); 
-Route::post('login/{provider}', [App\Http\Controllers\AuthController::class, 'postSocialLogin'])->name('social-login'); 
-Route::get('login/{provider}/callback', [App\Http\Controllers\AuthController::class, 'handleProviderCallback'])->where('provider', '.*');
-Route::post('register', [App\Http\Controllers\AuthController::class, 'postRegistration'])->name('registration');
-Route::post('logout', [App\Http\Controllers\AuthController::class, 'postLogout'])->name('logout');
+

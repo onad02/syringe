@@ -84,7 +84,7 @@
                             <p>Please select anyone from below</p>
                             <v-row justify="space-between" class="text-center">
                               <v-col>
-                                <v-btn
+                                <v-btn @click="useAuthProvider('facebook', Facebook)"
                                   icon="fa-brands fa-facebook-f"
                                   color="blue"
                                 ></v-btn>
@@ -98,7 +98,7 @@
                               </v-col>
 
                               <v-col>
-                                <v-btn
+                                <v-btn @click="useAuthProvider('linkedin', Linkedin)"
                                   icon="fa-brands fa-linkedin-in"
                                   color="light-blue"
                                 ></v-btn>

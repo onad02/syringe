@@ -37,4 +37,10 @@ return [
         'redirect' => 'https://the-syringe.com/auth/google/callback',
     ], 
 
+    'facebook' => [
+        'client_id' => env('FACEBOOK_ID','531929842356807'),
+        'client_secret' => env('FACEBOOK_SECRET','bdf616b89828f461a41e26a0eb6a0928'),
+        'redirect' => env('FACEBOOK_URL','https://the-syringe.com/auth/facebook/callback'),
+    ],
+
 ];

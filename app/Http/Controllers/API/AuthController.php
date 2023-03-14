@@ -287,29 +287,27 @@ class AuthController extends Controller
             $auth = Socialite::driver($provider)->stateless()->user();
             $email = $auth->getEmail();
 
-            if ($provider == 'google') {
+            $applicantExists = ApplicantMaster::where('email_id', $email)->first();
+            if($applicantExists && $applicantExists->sgm_id != NULL){
+                
+                auth()->guard('applicant')->login($applicantExists);
+                        
+                return response()->json([
+                    'account_exists' => true
+                ], 200);
 
-                $applicantExists = ApplicantMaster::where('email_id', $email)->first();
-                if($applicantExists && $applicantExists->sgm_id != NULL){
-                    
-                    auth()->guard('applicant')->login($applicantExists);
-                            
-                    return response()->json([
-                        'account_exists' => true
-                    ], 200);
+            } else {
 
-                } else {
-
-                    return response()->json([
-                        'account_exists' => false,
-                        'provider' => $provider,
-                        'token' => $auth->token,
-                        'name' => $auth->name,
-                        'email' => $email,
-                        'avatar' => $auth->avatar_original,
-                    ]);
-                }
+                return response()->json([
+                    'account_exists' => false,
+                    'provider' => $provider,
+                    'token' => $auth->token,
+                    'name' => $auth->name,
+                    'email' => $email,
+                    'avatar' => $auth->avatar_original,
+                ]);
             }
+
 
         } catch (\Throwable $th) {
             return response()->json([
