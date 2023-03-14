@@ -142,10 +142,10 @@
                                         </v-card>
                                       </v-dialog>
                                     </v-col>
-                                    <v-col cols="4" align="start">
+                                    <v-col cols="3" align="start">
                                         <b>Name</b>
                                     </v-col>
-                                    <v-col cols="8" align="end">
+                                    <v-col cols="9"  align="end">
                                         <v-radio-group class="p-2"  hide-details="auto" v-model="gender" inline :rules="[v => !!v || 'Gender is required']">
                                         <v-spacer></v-spacer>
                                           <v-radio hide-details="auto"
@@ -180,16 +180,17 @@
                                     readonly
                                 ></v-text-field>
                                 
-
                                 <v-text-field
                                     density="comfortable"
                                     label="DD/MM/YYYY"
                                     v-model="birth_date"
                                     v-mask="'##/##/####'"
                                     variant="solo"
+                                    :suffix="calculateAge+' Years'"
                                     :rules="[v => !!v || 'Date of Birth is required']"
-                                ></v-text-field>
-
+                                >
+                                </v-text-field>
+                                
                                 <v-btn
                                   :loading="processing"
                                   :disabled="processing"
@@ -215,16 +216,8 @@
                             
                             <v-form ref="form_otp" class="mx-2" lazy-validation>
 
-                                
-                                    
-                                        <v-alert transition="slide-y-reverse-transition" v-model="otp_error"  closable   class="mb-2"  type="error" text="Invalid OTP"></v-alert>
-                                   
-                                  
-                                        <v-alert transition="slide-y-reverse-transition" v-model="otp_resend"  closable  class="mb-2"  type="success" text="Otp successfully resend!"></v-alert>
-                                    
-                                
-                                    
-                                    
+                                <v-alert transition="slide-y-reverse-transition" v-model="otp_error"  closable   class="mb-2"  type="error" text="Invalid OTP"></v-alert>
+                                <v-alert transition="slide-y-reverse-transition" v-model="otp_resend"  closable  class="mb-2"  type="success" text="Otp successfully resend!"></v-alert>
 
                                 <v-text-field
                                     density="comfortable"
@@ -292,10 +285,10 @@
                             <v-form ref="form_personal_details" class="mx-2" lazy-validation>
                                 <v-sheet v-show="!social_auth">
                                   <v-row align="center" justify="space-between" no-gutters>
-                                      <v-col cols="4" align="start">
+                                      <v-col ols="3" align="start">
                                           <b>Name</b>
                                       </v-col>
-                                      <v-col cols="8" align="end">
+                                      <v-col  cols="9" align="end">
                                           <v-radio-group class="p-2"  hide-details="auto" v-model="gender" inline :rules="[v => !!v || 'Gender is required']">
                                           <v-spacer></v-spacer>
                                             <v-radio hide-details="auto"
@@ -322,6 +315,17 @@
                                   ></v-text-field>
                                 </v-sheet>
 
+                                <v-text-field v-show="!social_auth"
+                                    density="comfortable"
+                                    label="DD/MM/YYYY"
+                                    v-model="birth_date"
+                                    v-mask="'##/##/####'"
+                                    variant="solo"
+                                    :suffix="calculateAge+' Years'"
+                                    :rules="[v => !!v || 'Date of Birth is required']"
+                                ></v-text-field>
+
+
                                 <b>Mobile Number</b>
                                 <MazPhoneNumberInput
                                     v-model="mobile_number"
@@ -335,10 +339,10 @@
                                 />
                                 <br>
                                 <v-row align="center" justify="space-between" no-gutters>
-                                    <v-col cols="5" sm="4" md="8"  align="start">
+                                    <v-col cols="4" sm="4" md="7"  align="start">
                                         <b>What's App</b>
                                     </v-col>
-                                    <v-col cols="7" sm="8" md="4" align="center">
+                                    <v-col cols="8" sm="8" md="5" align="center">
                                         <v-checkbox v-model="same_phone" color="pink"   @change="sameAsPhone" hide-details="auto"  label="Same as Mobile #"></v-checkbox>
                                     </v-col>
                                 </v-row>
@@ -348,6 +352,8 @@
                                     color="info"
                                     :default-country-code="'SG'"
                                     :preferred-countries="['SG', 'BD', 'IN', 'MY', 'GB', 'PH']"
+                                    @update="whatsAppEvent = $event"
+                                    :success="whatsAppEvent?.isValid"
                                     :disabled="same_phone"
                                     size="md"
                                 />
@@ -449,7 +455,7 @@
                             <h3>Where are you currently, which country, city and town?</h3>
                           </v-col>
                         </v-row>
-                        <v-row align="center" no-gutters v-else-if="step == 6" transition="slide-x-transition">
+                        <!-- <v-row align="center" no-gutters v-else-if="step == 6" transition="slide-x-transition">
                           <v-col cols="12" sm="12" md="6" class="justify-center align-center pa-5">
                             <h3 class="mb-5">Step 5 - Additional Information</h3>
                             <v-form ref="form_additional_info" class="mx-2" lazy-validation>
@@ -503,10 +509,10 @@
                             <h3 v-if="social_auth">Please enter additional information in regards to your Nationlity and Passport Country.</h3>
                             <h3 v-else>Please enter additional information in regards to your Nationlity, Passport Country and Date of Birth.</h3>
                           </v-col>
-                        </v-row>
-                        <v-row align="center" no-gutters v-else-if="step == 7" transition="slide-x-transition">
+                        </v-row> -->
+                        <v-row align="center" no-gutters v-else-if="step == 6" transition="slide-x-transition">
                           <v-col cols="12" sm="12" md="12" class="justify-center align-center pa-5">
-                            <h3 class="mb-5">Step 6 - Select Skills</h3>
+                            <h3 class="mb-5">Step 5 - Select Skills</h3>
                             <v-form ref="form_additional_security" class="mx-2" lazy-validation>
                                  <v-radio-group v-model="skill" inline >
                                     
@@ -605,9 +611,10 @@ export default {
                 v => (v && v.length <= 50) || 'Name must be less than 50 characters',
             ],
             gender: '',
-            phoneEvent: '',
+            phoneEvent: null,
             mobile_number: '',
             same_phone: false,
+            whatsAppEvent: null,
             whats_app: '',
             password: '',
             confirm_password: '',
@@ -624,15 +631,15 @@ export default {
             town: '',
             nationality: '',
             passport_country: '',
-            birth_date: '',
+            birth_date: null,
             skill: '',
             processing: false,
             processing_resend: false,
             processing_otp: false,
             processing_avatar: false,
-            step: 1,
+            step: 2,
             show_login: false,
-            social_auth: false,
+            social_auth: true,
             social_data: { token: null,  provider: null},
             mime_type: '',
             autoCrop: false,
@@ -669,6 +676,20 @@ export default {
             }).catch(({error})=>{
                  console.log(error)
             });
+        }
+    },
+    computed:{
+        calculateAge: function() {
+            if(this.birth_date != null && /^(\d{1,2}\/\d{1,2}\/\d{4})$/.test(this.birth_date)){
+              let currentDate = new Date();
+              let dateParts = this.birth_date.split("/");
+              let birthDate = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+              let difference = currentDate - birthDate;
+              let age = Math.floor(difference/31557600000);
+              return age
+            } 
+
+            return 0;
         }
     },
     methods:{
@@ -839,9 +860,9 @@ export default {
         },
         async personalDetails(){
             const { valid } = await this.$refs.form_personal_details.validate();
-            if(valid){
+            if(valid && this.phoneEvent !== null && this.phoneEvent.isValid && this.whatsAppEvent !== null && this.whatsAppEvent.isValid){
                 this.processing = true;
-                axios.post('/api/register',{ action: 'personal-details', email: this.email, name: this.name, gender: this.gender, mobile_number: this.mobile_number, whats_app: this.whats_app }).then(response=>{
+                axios.post('/api/register',{ action: 'personal-details', email: this.email, name: this.name, gender: this.gender, birth_date: this.birth_date, mobile_number: this.mobile_number, whats_app: this.whats_app }).then(response=>{
                     this.processing = false;
                     this.step = 4;
                 }).catch(({error})=>{
@@ -887,16 +908,11 @@ export default {
         },
         handleAvatar() {
             this.processing_avatar = true;
-
-            // After obtaining the focus when closing the FilePicker, return the button state to normal
-            window.addEventListener('focus', () => {
-                this.processing_avatar = false
-            }, { once: true });
-            
             // Trigger click on the FileInput
             this.$refs.uploader.click();
         },
         cropImage() {
+          this.processing_avatar = false;
           this.avatar_url = this.$refs.cropper.getCroppedCanvas().toDataURL();
           this.$refs.cropper.getCroppedCanvas().toBlob((blob) => {
             this.avatar_blob = blob;

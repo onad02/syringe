@@ -304,7 +304,7 @@ class AuthController extends Controller
                     'token' => $auth->token,
                     'name' => $auth->name,
                     'email' => $email,
-                    'avatar' => $auth->avatar_original,
+                    'avatar' => $provider == 'facebook' ? $auth->getAvatar().'&access_token='.$auth->token : $auth->getAvatar(),
                 ]);
             }
 
