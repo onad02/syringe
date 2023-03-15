@@ -22,6 +22,7 @@ class ApplicantMaster extends Authenticatable
         'email_id',
         'password',
         'gender',
+        'email_verified',
         'mobile_number',
         'whats_app',
         'image',

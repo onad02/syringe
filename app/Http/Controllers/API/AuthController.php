@@ -136,6 +136,7 @@ class AuthController extends Controller
                         'applicant_name' => $request->name,
                         'gender' => $request->gender,
                         'dob' => $request->birth_date,
+                        'email_verified' => 'Y',
                         'registered_on' =>  Carbon::now()->format('d/m/Y'),
                         'registered_type' => ucfirst(substr($request->provider,0,1))
                     ]
@@ -283,30 +284,41 @@ class AuthController extends Controller
     public function socialLogin(Request $request, $provider)
     {
         try {
-          
-            $auth = Socialite::driver($provider)->stateless()->user();
-            $email = $auth->getEmail();
 
-            $applicantExists = ApplicantMaster::where('email_id', $email)->first();
-            if($applicantExists && $applicantExists->sgm_id != NULL){
-                
-                auth()->guard('applicant')->login($applicantExists);
-                        
+
+            if($provider == 'linkedin'){
+
                 return response()->json([
-                    'account_exists' => true
+                    'account_exists' => false,
+                    'redirect' => Socialite::driver($provider)->redirect()->getTargetUrl()
                 ], 200);
 
             } else {
 
-                return response()->json([
-                    'account_exists' => false,
-                    'provider' => $provider,
-                    'token' => $auth->token,
-                    'name' => $auth->name,
-                    'email' => $email,
-                    'avatar' => $provider == 'facebook' ? $auth->getAvatar().'&access_token='.$auth->token : $auth->getAvatar(),
-                ]);
-            }
+                $auth = Socialite::driver($provider)->stateless()->user();
+                $email = $auth->getEmail();
+
+                $applicantExists = ApplicantMaster::where('email_id', $email)->first();
+                if($applicantExists && $applicantExists->sgm_id != NULL){
+                    
+                    auth()->guard('applicant')->login($applicantExists);
+                            
+                    return response()->json([
+                        'account_exists' => true
+                    ], 200);
+
+                } else {
+
+                    return response()->json([
+                        'account_exists' => false,
+                        'provider' => $provider,
+                        'token' => $auth->token,
+                        'name' => $auth->name,
+                        'email' => $email,
+                        'avatar' => $provider == 'facebook' ? $auth->getAvatar().'&access_token='.$auth->token : $auth->getAvatar(),
+                    ]);
+                }  
+            } 
 
 
         } catch (\Throwable $th) {
