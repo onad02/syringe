@@ -37,10 +37,20 @@ const options = {
     },
     facebook: {
       clientId: '531929842356807',
+      scope: ['email', 'public_profile'],
       redirectUri: 'https://the-syringe.com/auth/facebook/callback'
+    },
+    instagram: {
+      clientId: '1003221037728223',
+      redirectUri: 'https://the-syringe.com/auth/instagram/callback'
+    },
+    tiktok: {
+      clientId: 'awsrart2cbyww1ez',
+      redirectUri: 'https://the-syringe.com/auth/tiktok/callback'
     },
     linkedin: {
       clientId: '77031j3glcm689',
+      scope: ['r_liteprofile', 'r_emailaddress'],
       redirectUri: 'https://the-syringe.com/auth/linkedin/callback'
     }
   }

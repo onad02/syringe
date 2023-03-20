@@ -91,6 +91,13 @@
                               </v-col>
 
                               <v-col>
+                                <v-btn @click="useAuthProvider('instagram', Instagram)"
+                                  icon="fa-brands fa-instagram"
+                                  color="pink"
+                                ></v-btn>
+                              </v-col>
+
+                              <v-col>
                                 <v-btn  @click="useAuthProvider('google', Google)"
                                   icon="fa-brands fa-google-plus-g"
                                   color="red"
@@ -190,7 +197,7 @@
                                     :rules="[v => !!v || 'Date of Birth is required']"
                                 >
                                 </v-text-field>
-                                
+
                                 <v-btn
                                   :loading="processing"
                                   :disabled="processing"
@@ -235,6 +242,8 @@
                                               label="OTP"
                                               type="input"
                                               variant="solo"
+                                              v-mask="'####'"
+                                              placeholder="XXXX"
                                               :rules="[v => !!v || 'OTP is required']"
                                               hide-details="auto"
                                             ></v-text-field>
@@ -380,9 +389,9 @@
                           <v-col cols="12" sm="12" md="6" class="justify-center align-center pa-5">
                             <h3 class="mb-5">Step 3 - Additional Security</h3>
                             <v-form ref="form_additional_security" class="mx-2" lazy-validation>
-                                 <v-text-field density="comfortable" v-model="password" type="password"  label="Password" variant="solo" :rules="passwordRules"> </v-text-field>   
+                                 <v-text-field density="comfortable" v-model="password" label="Password" variant="solo" :rules="passwordRules" :append-inner-icon="show_password ? 'fa fa-eye fa-2x' : 'fa fa-eye-slash fa-2x'" :type="show_password ? 'text' : 'password'" @click:append-inner="show_password = !show_password"> </v-text-field>   
                                  <br>
-                                 <v-text-field density="comfortable" v-model="confirm_password" type="password"  label="Confirm Password" variant="solo" :rules="passwordConfirmRules"> </v-text-field>   
+                                 <v-text-field density="comfortable" v-model="confirm_password"  label="Confirm Password" variant="solo" :rules="passwordConfirmRules" :append-inner-icon="show_confirm_password ? 'fa fa-eye fa-2x' : 'fa fa-eye-slash fa-2x'" :type="show_confirm_password ? 'text' : 'password'" @click:append-inner="show_confirm_password = !show_confirm_password"> </v-text-field>   
                                  <v-btn
                                   :loading="processing"
                                   :disabled="processing"
@@ -513,14 +522,14 @@
                         <v-row align="center" no-gutters v-else-if="step == 6" transition="slide-x-transition">
                           <v-col cols="12" sm="12" md="12" class="justify-center align-center pa-5">
                             <h3 class="mb-5">Step 5 - Select Skills</h3>
-                            <v-form ref="form_additional_security" class="mx-2" lazy-validation>
-                                 <v-radio-group v-model="skill" inline >
+                            <v-form ref="form_additional_skills" class="mx-2" lazy-validation>
+                                 <v-radio-group v-model="skill" :rules="[v => !!v || 'Skills is required']" required inline >
                                     
                                     <v-radio class="skills" v-for="skill in skills" :key="skill.group_name" :value="skill.sgm_id" color="pink"><template v-slot:label>
 
-                                            <v-sheet  class="fill-height fill-width pa-2" fluid style="min-height: 75px; width: 140px;">
+                                            <v-sheet  class="fill-height fill-width pa-2 skills" fluid>
                                                 <small>{{ skill.group_name }}</small>
-                                                <v-img height="75" cover :src="`/images/${skill.image}`"></v-img>
+                                                <v-img height="80" cover :src="`/images/${skill.image}`"></v-img>
                                             </v-sheet>
                                         
                                         </template
@@ -534,7 +543,43 @@
                                               :loading="processing"
                                               :disabled="processing"
                                               color="pink"  size="large" block class="mt-2"
-                                              @click="processRegister"
+                                              @click="processSkill"
+                                            >
+                                              Next
+                                            </v-btn>
+                                        </v-col>
+                                    </v-row>
+
+                                
+                               
+                            </v-form>
+                          </v-col>
+                          
+                        </v-row>
+                        <v-row align="center" no-gutters v-else-if="step == 7" transition="slide-x-transition">
+                          <v-col cols="12" sm="12" md="12" class="justify-center align-center pa-5">
+                            <h3 class="mb-5">Step 6 - Select Your Specialization</h3>
+                            <v-form ref="form_specialization" class="mx-2" lazy-validation>
+
+                                 <v-radio-group v-model="specialization" :rules="[v => !!v || 'Specialization is required']" required inline >
+                                    
+                                    <v-radio class="skills" v-for="data in specializations" :value="data.skills_id" color="pink"><template v-slot:label>
+                                            <v-sheet  class="fill-height fill-width pa-2 specialization" fluid >
+                                                <small>{{ data.skills_name }}</small>
+                                                <v-img height="80" cover :src="`/images/${data.image}`"></v-img>
+                                            </v-sheet>
+                                        </template
+                                      ></v-radio
+                                    >
+                                  </v-radio-group>
+                                
+                                   <v-row justify="space-between" class="text-center">
+                                        <v-col cols="12" sm="12" md="6">
+                                             <v-btn
+                                              :loading="processing"
+                                              :disabled="processing"
+                                              color="pink"  size="large" block class="mt-2"
+                                              @click="processSpecialization"
                                             >
                                               Next
                                             </v-btn>
@@ -548,6 +593,40 @@
                           
                         </v-row>
                         <v-row align="center" no-gutters v-else-if="step == 8" transition="slide-x-transition">
+                          <v-col cols="12" sm="12" md="12" class="justify-center align-center pa-5">
+                            <h3 class="mb-5">Step 6 - Working Status on Singapore</h3>
+                            <v-form ref="form_working_status" class="mx-2" lazy-validation>
+
+                                <v-radio-group v-model="working_status" :rules="[v => !!v || 'Working Status is required']" required >
+                                  <v-radio class="skills" v-for="data in immigration_status" :value="data.immigration_id" color="pink">
+                                      <template v-slot:label>
+                                            <v-sheet  class="pa-2">
+                                                {{ data.name }}
+                                            </v-sheet>
+                                        </template>
+                                  </v-radio>
+                                </v-radio-group>
+                                
+                               <v-row justify="space-between" class="text-center">
+                                    <v-col cols="12" sm="12" md="6">
+                                         <v-btn
+                                          :loading="processing"
+                                          :disabled="processing"
+                                          color="pink"  size="large" block class="mt-2"
+                                          @click="processRegister"
+                                        >
+                                          Next
+                                        </v-btn>
+                                    </v-col>
+                                </v-row>
+
+                                
+                               
+                            </v-form>
+                          </v-col>
+                          
+                        </v-row>
+                        <v-row align="center" no-gutters v-else-if="step == 9" transition="slide-x-transition">
                           <v-col cols="12" sm="12" md="12" class="justify-center align-center pa-5">
                             <h3 class="mb-5">Hi {{ name }}</h3>
                             <p>You have successfully registerd in The-Syringe, a marketplace for Healthcare jobs around the world.</p>
@@ -591,6 +670,8 @@ export default {
             cities: [],
             towns: [],
             skills: [],
+            specializations: [],
+            immigration_status: [],
             email: '',
             emailRules: [
               v => !!v || 'E-mail is required',
@@ -617,7 +698,9 @@ export default {
             whatsAppEvent: null,
             whats_app: '',
             password: '',
+            show_password: false,
             confirm_password: '',
+            show_confirm_password: false,
             passwordRules: [
                 v => !!v || "Password required",
                 v => (v && v.length > 8) || 'Password min of 8 characters',
@@ -633,13 +716,15 @@ export default {
             passport_country: '',
             birth_date: null,
             skill: '',
+            specialization: '',
+            working_status: '',
             processing: false,
             processing_resend: false,
             processing_otp: false,
             processing_avatar: false,
-            step: 2,
+            step: 1,
             show_login: false,
-            social_auth: true,
+            social_auth: false,
             social_data: { token: null,  provider: null},
             mime_type: '',
             autoCrop: false,
@@ -709,31 +794,36 @@ export default {
         },
         useSocialLogin(provider,response) {
           axios.post('/api/login/'+provider, response).then(response => {
-            if(response.data.account_exists){
-              this.signIn();
-              this.$router.push({name:"home"});
-            } else {
-              this.social_auth = true;
-              this.step = 2;
-              this.email = response.data.email;
-              this.name = response.data.name;
-              this.social_data.provider = provider;
-              this.avatar_url = response.data.avatar;
-              this.social_data.token = response.data.token;
-            }
+            
+              if(response.data.account_exists){
+                this.signIn();
+                this.$router.push({name:"home"});
+              } else {
+                this.social_auth = true;
+                this.step = 2;
+                this.email = response.data.email;
+                this.name = response.data.name;
+                this.social_data.provider = provider;
+                this.avatar_url = response.data.avatar;
+                this.social_data.token = response.data.token;
+              }
+
 
           }).catch((err) => {
               console.log(err)
           })
         },
         async processRegister(){
-            await axios.get('/sanctum/csrf-cookie')
-            await axios.post('/register',{ action: 'skills', email: this.email, skill : this.skill }).then(response=>{
-                this.signIn();
-                this.step = 8;
-            }).catch(({response})=>{
-                console.log(response);
-            });
+            const { valid } = await this.$refs.form_working_status.validate();
+            if(valid){
+              await axios.get('/sanctum/csrf-cookie')
+              await axios.post('/api/register',{ action: 'working-status', email: this.email, immigration_id : this.working_status }).then(response=>{
+                  this.signIn();
+                  this.step = 9;
+              }).catch(({response})=>{
+                  console.log(response);
+              });
+            }
         },
         async countryData(){
             await axios.get('/api/countries').then(response=>{
@@ -793,12 +883,13 @@ export default {
             const { valid } = await this.$refs.form.validate();
             if(valid){
                 this.processing = true;
-                axios.post('/api/register',{ action: 'send-otp', email: this.email }).then(response=>{
+                axios.post('/api/register',{ action: 'check-email', email: this.email }).then(response=>{
                     this.processing = false;
                     if(response.data.user_found){
                         this.show_login = true;
                     } else {
-                        this.step = 2;
+                      this.step = 2;
+                      axios.post('/api/register',{ action: 'send-otp', email: this.email });
                     }
                 }).catch(({error})=>{
                      console.log(error)
@@ -889,6 +980,32 @@ export default {
                 axios.post('/api/register',{ action: 'location', email: this.email , country: this.country , city: this.city , town: this.town }).then(response=>{
                     this.processing = false;
                     this.step = 6;
+                }).catch(({error})=>{
+                    this.processing = false;
+                });
+            }
+        },
+        async processSkill(){
+            const { valid } = await this.$refs.form_additional_skills.validate();
+            if(valid){
+                this.processing = true;
+                axios.post('/api/register',{ action: 'skill', email: this.email , skill: this.skill }).then(response=>{
+                    this.specializations = response.data.specializations;
+                    this.processing = false;
+                    this.step = 7;
+                }).catch(({error})=>{
+                    this.processing = false;
+                });
+            }
+        },
+        async processSpecialization(){
+            const { valid } = await this.$refs.form_specialization.validate();
+            if(valid){
+                this.processing = true;
+                axios.post('/api/register',{ action: 'specialization', email: this.email, specialization: this.specialization }).then(response=>{
+                    this.immigration_status = response.data.immigration_status;
+                    this.processing = false;
+                    this.step = 8;
                 }).catch(({error})=>{
                     this.processing = false;
                 });

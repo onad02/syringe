@@ -47,6 +47,11 @@ a {
   position: relative;
 }
 
+.skills, .specialization {
+  min-height: 80px; 
+  width: 200px;
+}
+
 .site-navbar {
   margin-bottom: 0px;
   z-index: 1999;
@@ -64,6 +69,11 @@ a {
       padding-top: 3rem;
       padding-bottom: 3rem;
      }  */
+
+      .skills, .specialization {
+        min-height: 60px!important;
+        width: 140px!important;
+      }
     }
   .site-navbar .toggle-button {
     position: absolute;

@@ -33,6 +33,8 @@ class ApplicantMaster extends Authenticatable
         'passport',
         'dob',
         'sgm_id',
+        'skills_id',
+        'immigration_id',
         'registered_on',
         'registered_type'
     ];
