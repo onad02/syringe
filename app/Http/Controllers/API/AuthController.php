@@ -8,6 +8,8 @@ use App\Mail\EmailVerification;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\ApplicantMaster;
 use App\Models\SkillGroupMaster;
+use App\Models\SkillMaster;
+use App\Models\ImmigrationStatus;
 use App\Models\CountryMaster;
 use App\Models\CityMaster;
 use App\Models\TownMaster;
@@ -79,28 +81,16 @@ class AuthController extends Controller
 
             $action = $request->action;
             if($action == 'send-otp'){
+                //send otp
+                $otp = mt_rand(1000,9999);;
+                Cache::put($request->email, $otp, now()->addMinutes(10));
 
-                //lets check first if email already exist
-                $user = ApplicantMaster::where('email_id',$request->email)->first();
-                if($user){
+                Mail::to($request->email)->send(new EmailVerification($otp));
 
-                    //login user
-                    return response()->json([
-                        'user_found' => true
-                    ], 200);
+                 return response()->json([
+                    'message' => 'Success! OTP successfully sent!'
+                ], 200);
 
-                } else {
-
-                    //send otp
-                    $otp = mt_rand(1000,9999);;
-                    Cache::put($request->email, $otp, now()->addMinutes(10));
-
-                    Mail::to($request->email)->send(new EmailVerification($otp));
-
-                    return response()->json([
-                        'user_found' => false
-                    ], 200);
-                }
             } else if($action == 'verify-otp'){
 
                 if (Cache::has($request->email)) {
@@ -127,6 +117,24 @@ class AuthController extends Controller
                 return response()->json([
                     'message' => 'OTP is incorrect!'
                 ], 404);
+
+            } else if($action == 'check-email'){
+
+                //lets check first if email already exist
+                $user = ApplicantMaster::where('email_id',$request->email)->first();
+                if($user){
+
+                    //login user
+                    return response()->json([
+                        'user_found' => true
+                    ], 200);
+
+                } else {
+
+                    return response()->json([
+                        'user_found' => false
+                    ], 200);
+                }
 
             } else if($action == 'user-information'){
 
@@ -174,6 +182,7 @@ class AuthController extends Controller
                     [
                         'applicant_name' => $request->name,
                         'gender' => $request->gender,
+                        'dob' => $request->birth_date,
                         'mobile_number' => $request->mobile_number,
                         'whats_app' => $request->whats_app,
                     ]
@@ -245,6 +254,50 @@ class AuthController extends Controller
                     'message' => 'Success! Location saved!'
                 ], 200);
 
+            } else if($action == 'skill'){
+
+                $user = ApplicantMaster::updateOrCreate(
+                    ['email_id' =>  $request->email],
+                    [
+                        'sgm_id' => $request->skill
+                    ]
+                );
+
+                $specializations = SkillMaster::where('sgm_id',$request->skill)->select('skills_id','skills_name','image')->get();
+
+                return response()->json([
+                    'specializations' => $specializations
+                ], 200);
+
+            } else if($action == 'specialization'){
+
+                $user = ApplicantMaster::updateOrCreate(
+                    ['email_id' =>  $request->email],
+                    [
+                        'skills_id' => $request->specialization
+                    ]
+                );
+
+                return response()->json([
+                    'message' => 'Success! Specialization saved!',
+                    'immigration_status' => ImmigrationStatus::get()
+                ], 200);
+
+            } else if($action == 'working-status'){
+
+                $user = ApplicantMaster::updateOrCreate(
+                    ['email_id' =>  $request->email],
+                    [
+                        'immigration_id' => $request->immigration_id
+                    ]
+                );
+
+                auth()->guard('applicant')->login($user);
+                            
+                return response()->json([
+                    'message' => 'Success! Working status saved!',
+                ], 200);
+                
             } else if($action == 'additional-info'){
 
                 $user = ApplicantMaster::updateOrCreate(
@@ -284,41 +337,30 @@ class AuthController extends Controller
     public function socialLogin(Request $request, $provider)
     {
         try {
+          
+            $auth = Socialite::driver($provider)->stateless()->user();
+            $email = $auth->getEmail();
 
-
-            if($provider == 'linkedin'){
-
+            $applicantExists = ApplicantMaster::where('email_id', $email)->where('registered_type',ucfirst(substr($provider,0,1)))->first();
+            if($applicantExists && $applicantExists->sgm_id != NULL){
+                
+                auth()->guard('applicant')->login($applicantExists);
+                        
                 return response()->json([
-                    'account_exists' => false,
-                    'redirect' => Socialite::driver($provider)->redirect()->getTargetUrl()
+                    'account_exists' => true
                 ], 200);
 
             } else {
 
-                $auth = Socialite::driver($provider)->stateless()->user();
-                $email = $auth->getEmail();
-
-                $applicantExists = ApplicantMaster::where('email_id', $email)->first();
-                if($applicantExists && $applicantExists->sgm_id != NULL){
-                    
-                    auth()->guard('applicant')->login($applicantExists);
-                            
-                    return response()->json([
-                        'account_exists' => true
-                    ], 200);
-
-                } else {
-
-                    return response()->json([
-                        'account_exists' => false,
-                        'provider' => $provider,
-                        'token' => $auth->token,
-                        'name' => $auth->name,
-                        'email' => $email,
-                        'avatar' => $provider == 'facebook' ? $auth->getAvatar().'&access_token='.$auth->token : $auth->getAvatar(),
-                    ]);
-                }  
-            } 
+                return response()->json([
+                    'account_exists' => false,
+                    'provider' => $provider,
+                    'token' => $auth->token,
+                    'name' => $auth->name,
+                    'email' => $email,
+                    'avatar' => $provider == 'facebook' ? $auth->getAvatar().'&access_token='.$auth->token : $auth->getAvatar(),
+                ]);
+            }
 
 
         } catch (\Throwable $th) {

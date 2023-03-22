@@ -566,7 +566,7 @@
                                     <v-radio class="skills" v-for="data in specializations" :value="data.skills_id" color="pink"><template v-slot:label>
                                             <v-sheet  class="fill-height fill-width pa-2 specialization" fluid >
                                                 <small>{{ data.skills_name }}</small>
-                                                <v-img height="80" cover :src="`/images/${data.image}`"></v-img>
+                                                <v-img height="80" cover :src="`/images/skills/${data.image}`"></v-img>
                                             </v-sheet>
                                         </template
                                       ></v-radio
